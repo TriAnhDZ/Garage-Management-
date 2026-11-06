@@ -20,6 +20,6 @@ indexxx/storage/pdf/*.html
 # Loai bo bao cao, tai lieu va hinh anh khoi git (chi giu ma nguon du an)
 baocaobaomat/
 taileu/
-images/
+/images/
 *.docx
 *.mdj

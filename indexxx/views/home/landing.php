@@ -15,6 +15,25 @@ $brands = $brands ?? [];
 $lookupPlate = $lookupPlate ?? '';
 $carProgress = $carProgress ?? null;
 
+// Hình ảnh thực tế cho các dịch vụ sửa chữa
+$serviceImages = [
+    1 => 'assets/images/services/service_oil.jpg',    // Thay dầu động cơ & lọc dầu
+    2 => 'assets/images/services/service_wheel.jpg',  // Cân chỉnh góc đặt bánh xe
+    3 => 'assets/images/services/service_brake.jpg',  // Bảo dưỡng phanh 4 bánh
+    4 => 'assets/images/services/service_ac.jpg',     // Vệ sinh dàn lạnh điều hòa bằng nội soi
+    5 => 'assets/images/services/service_paint.jpg',  // Sơn dặm vá cản trước / sau
+];
+
+// Hình ảnh thực tế cho các vật tư phụ tùng linh kiện
+$partImages = [
+    1 => 'assets/images/parts/part_oil_castrol.jpg',    // Dầu nhớt Castrol Magnatec 5W-30
+    2 => 'assets/images/parts/part_filter_toyota.jpg',  // Lọc nhớt Toyota Vios chính hãng
+    3 => 'assets/images/parts/part_brake_mazda.jpg',    // Má phanh trước Ceramic Mazda CX-5
+    4 => 'assets/images/parts/part_sparkplug_ngk.jpg',  // Bugi Iridium NGK Laser
+    5 => 'assets/images/parts/part_tire_michelin.jpg',  // Lốp Michelin Primacy 4
+    6 => 'assets/images/parts/part_battery_gs.jpg',     // Bình ắc quy GS 12V-60Ah
+];
+
 // Lập bản đồ phiếu sửa chữa mới nhất theo từng xe
 $latestRepairsByCar = [];
 foreach ($myRepairs as $r) {
@@ -861,7 +880,7 @@ foreach ($myRepairs as $r) {
             line-height: 1.5;
         }
 
-        /* Services Grid */
+        /* Services Grid & Image Cards */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -871,25 +890,65 @@ foreach ($myRepairs as $r) {
         .service-card {
             background: #ffffff;
             border-radius: 14px;
-            padding: 26px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
             border: 1px solid var(--card-border);
-            border-top: 4px solid var(--primary-accent);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.25s ease;
+            transition: all 0.3s ease;
         }
 
         .service-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 14px 30px rgba(0,0,0,0.1);
+        }
+
+        .service-card:hover .service-img-wrapper img {
+            transform: scale(1.08);
+        }
+
+        .service-img-wrapper {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            background: #0f172a;
+        }
+
+        .service-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .service-img-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(15, 23, 42, 0.78);
+            color: #38bdf8;
+            backdrop-filter: blur(4px);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .service-body {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
         }
 
         .service-icon {
-            font-size: 2rem;
+            font-size: 1.4rem;
             color: var(--primary-accent);
-            margin-bottom: 15px;
+            margin-bottom: 8px;
+            display: inline-block;
         }
 
         .service-card h3 {
@@ -907,13 +966,160 @@ foreach ($myRepairs as $r) {
             flex-grow: 1;
         }
 
+        .service-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 14px;
+            margin-top: 10px;
+        }
+
         .service-price {
             font-size: 1.25rem;
             font-weight: 800;
             color: #059669;
-            border-top: 1px dashed #e2e8f0;
-            padding-top: 12px;
-            margin-top: 8px;
+        }
+
+        /* Lưới linh kiện phụ tùng có hình ảnh (Parts Showcase) */
+        .parts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 22px;
+            margin-bottom: 30px;
+        }
+
+        .part-card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid var(--card-border);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            position: relative;
+        }
+
+        .part-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+            border-color: #93c5fd;
+        }
+
+        .part-card:hover .part-img-container img {
+            transform: scale(1.06);
+        }
+
+        .part-img-container {
+            width: 100%;
+            height: 160px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        .part-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .part-brand-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.92);
+            color: #1e3a8a;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .part-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 6px;
+            line-height: 1.4;
+            min-height: 44px;
+        }
+
+        .part-card-meta {
+            font-size: 0.82rem;
+            color: #64748b;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .part-card-price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1e40af;
+            margin-bottom: 12px;
+        }
+
+        /* Workshop Photo Gallery */
+        .workshop-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .workshop-photo-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+        }
+
+        .workshop-photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+        .workshop-photo-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .workshop-photo-card img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .workshop-photo-caption {
+            padding: 14px 16px;
+        }
+
+        .workshop-photo-caption h4 {
+            margin: 0 0 4px;
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .workshop-photo-caption p {
+            margin: 0;
+            font-size: 0.82rem;
+            color: #64748b;
+            line-height: 1.45;
         }
 
         /* 5-Step Standardized Workflow */
@@ -1316,49 +1522,71 @@ foreach ($myRepairs as $r) {
     <!-- 2. Hero Showcase Banner -->
     <section class="hero-section">
         <div class="hero-content">
-            <?php if ($isCustomer && $currentUser): ?>
-                <div class="hero-tag">
-                    <i class="fas fa-gem" style="color: #fbbf24;"></i> CỔNG DỊCH VỤ KHÁCH HÀNG THÂN THIẾT (VIP)
+            <div class="hero-flex-wrapper" style="display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap;">
+                <div style="flex: 1 1 540px; min-width: 300px;">
+                    <?php if ($isCustomer && $currentUser): ?>
+                        <div class="hero-tag">
+                            <i class="fas fa-gem" style="color: #fbbf24;"></i> CỔNG DỊCH VỤ KHÁCH HÀNG THÂN THIẾT (VIP)
+                        </div>
+                        <h1 class="hero-title">
+                            Kính chào Quý khách, <span><?= htmlspecialchars($currentUser['ho_ten']) ?></span>!
+                        </h1>
+                        <p class="hero-desc">
+                            Chào mừng bạn quay trở lại với Trung tâm Dịch vụ Kỹ thuật Ô tô <b>GARA PRO HÀ NỘI</b>. Hệ thống sẵn sàng đồng hành cùng xế yêu của bạn: theo dõi tiến độ sửa chữa trực tuyến, tải phiếu kết quả & hóa đơn PDF (1 trang) đính kèm chữ ký đóng dấu xác nhận.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="#xe-cua-toi" class="btn-hero btn-hero-primary">
+                                <i class="fas fa-car"></i> Quản lý <?= count($myCars) ?> xe của tôi
+                            </a>
+                            <a href="#dat-lich" class="btn-hero btn-hero-outline">
+                                <i class="fas fa-calendar-plus"></i> Đặt lịch hẹn bảo dưỡng mới
+                            </a>
+                            <a href="#gioi-thieu" class="btn-hero btn-hero-outline">
+                                <i class="fas fa-info-circle"></i> Giới thiệu về Garage Pro
+                            </a>
+                            <a href="tel:0825893162" class="btn-hero btn-hero-outline" style="border-color: #34d399; color: #34d399;">
+                                <i class="fas fa-phone-alt"></i> Hotline 24/7: 0825.893.162
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <h1 class="hero-title">
+                            DỊCH VỤ SỬA CHỮA & CHĂM SÓC XE <span>CHUYÊN NGHIỆP TẠI HÀ NỘI</span>
+                        </h1>
+                        <p class="hero-desc">
+                            Garage Pro Hà Nội - Tọa lạc tại 123 Đường Cầu Giấy, Hà Nội. Quy mô 2.000m² với 10 khoang dịch vụ hiện đại, cầu nâng thủy lực chuẩn châu Âu, máy chẩn đoán OBD-II đa năng, cam kết 100% phụ tùng chính hãng và tự động xuất hóa đơn PDF qua Gmail.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="#dat-lich" class="btn-hero btn-hero-primary">
+                                <i class="fas fa-calendar-check"></i> Đặt lịch hẹn bảo dưỡng ngay
+                            </a>
+                            <a href="#tra-cuu" class="btn-hero btn-hero-outline">
+                                <i class="fas fa-search-location"></i> Tra cứu tiến độ xe đang sửa
+                            </a>
+                            <a href="#gioi-thieu" class="btn-hero btn-hero-outline">
+                                <i class="fas fa-building"></i> Tìm hiểu về Garage Pro
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
-                <h1 class="hero-title">
-                    Kính chào Quý khách, <span><?= htmlspecialchars($currentUser['ho_ten']) ?></span>!
-                </h1>
-                <p class="hero-desc">
-                    Chào mừng bạn quay trở lại với Trung tâm Dịch vụ Kỹ thuật Ô tô <b>GARA PRO HÀ NỘI</b>. Hệ thống sẵn sàng đồng hành cùng xế yêu của bạn: theo dõi tiến độ sửa chữa trực tuyến, tải phiếu kết quả & hóa đơn PDF (1 trang) đính kèm chữ ký đóng dấu xác nhận.
-                </p>
-                <div class="hero-actions">
-                    <a href="#xe-cua-toi" class="btn-hero btn-hero-primary">
-                        <i class="fas fa-car"></i> Quản lý <?= count($myCars) ?> xe của tôi
-                    </a>
-                    <a href="#dat-lich" class="btn-hero btn-hero-outline">
-                        <i class="fas fa-calendar-plus"></i> Đặt lịch hẹn bảo dưỡng mới
-                    </a>
-                    <a href="#gioi-thieu" class="btn-hero btn-hero-outline">
-                        <i class="fas fa-info-circle"></i> Giới thiệu về Garage Pro
-                    </a>
-                    <a href="tel:0825893162" class="btn-hero btn-hero-outline" style="border-color: #34d399; color: #34d399;">
-                        <i class="fas fa-phone-alt"></i> Hotline 24/7: 0825.893.162
-                    </a>
+
+                <!-- Thẻ Hình Ảnh Xưởng Thực Tế Nổi Bật -->
+                <div style="flex: 1 1 420px; max-width: 500px; width: 100%;">
+                    <div style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 45px rgba(0,0,0,0.45); border: 1.5px solid rgba(255,255,255,0.15);">
+                        <img src="assets/images/services/hero_workshop.jpg" alt="Khoang xưởng dịch vụ Garage Pro" style="width: 100%; height: 320px; object-fit: cover; display: block;">
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                                <span style="background: #2563eb; color: #fff; font-size: 0.75rem; font-weight: 800; padding: 3px 8px; border-radius: 6px;">XƯỞNG KỸ THUẬT</span>
+                                <span style="color: #38bdf8; font-size: 0.82rem; font-weight: 600;"><i class="fas fa-certificate"></i> Chuẩn Châu Âu</span>
+                            </div>
+                            <h4 style="margin: 0; font-size: 1.1rem; color: #ffffff; font-weight: 700;">Hệ Thống 10 Khoang Sửa Chữa Hiện Đại</h4>
+                            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #cbd5e1;">Cầu nâng thủy lực cao cấp & máy chẩn đoán ECU đa năng</p>
+                        </div>
+                        <div style="position: absolute; top: 16px; right: 16px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 8px; color: #fbbf24; font-size: 0.82rem; font-weight: 700;">
+                            <i class="fas fa-star"></i> 5.000+ Lượt Xe Tin Cậy
+                        </div>
+                    </div>
                 </div>
-            <?php else: ?>
-                <h1 class="hero-title">
-                    DỊCH VỤ SỬA CHỮA & CHĂM SÓC XE <span>CHUYÊN NGHIỆP TẠI HÀ NỘI</span>
-                </h1>
-                <p class="hero-desc">
-                    Garage Pro Hà Nội - Tọa lạc tại 123 Đường Cầu Giấy, Hà Nội. Quy mô 2.000m² với 10 khoang dịch vụ hiện đại, cầu nâng thủy lực chuẩn châu Âu, máy chẩn đoán OBD-II đa năng, cam kết 100% phụ tùng chính hãng và tự động xuất hóa đơn PDF qua Gmail.
-                </p>
-                <div class="hero-actions">
-                    <a href="#dat-lich" class="btn-hero btn-hero-primary">
-                        <i class="fas fa-calendar-check"></i> Đặt lịch hẹn bảo dưỡng ngay
-                    </a>
-                    <a href="#tra-cuu" class="btn-hero btn-hero-outline">
-                        <i class="fas fa-search-location"></i> Tra cứu tiến độ xe đang sửa
-                    </a>
-                    <a href="#gioi-thieu" class="btn-hero btn-hero-outline">
-                        <i class="fas fa-building"></i> Tìm hiểu về Garage Pro
-                    </a>
-                </div>
-            <?php endif; ?>
+            </div>
         </div>
     </section>
 
@@ -1610,7 +1838,46 @@ foreach ($myRepairs as $r) {
             </div>
         </div>
 
-        <!-- 4 Cam Kết Vàng -->
+        <!-- HÌNH ẢNH THỰC TẾ XƯỞNG DỊCH VỤ & KHOANG KỸ THUẬT -->
+        <div style="margin-top: 35px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-camera-retro" style="color: #2563eb;"></i> HÌNH ẢNH KHÔNG GIAN XƯỞNG & ĐỘI NGŨ KỸ THUẬT
+                </h3>
+                <span style="font-size: 0.85rem; color: #64748b;"><i class="fas fa-check-circle text-success"></i> Hình ảnh thực tế tại 123 Đường Cầu Giấy, Hà Nội</span>
+            </div>
+
+            <div class="workshop-gallery-grid">
+                <div class="workshop-photo-card">
+                    <img src="assets/images/services/hero_workshop.jpg" alt="Khoang sửa chữa ô tô hiện đại" loading="lazy">
+                    <div class="workshop-photo-caption">
+                        <h4>10 Khoang Dịch Vụ Chuẩn Châu Âu</h4>
+                        <p>Cầu nâng thủy lực đồng bộ, trang thiết bị bảo hộ an toàn và sàn epoxy chuyên dụng.</p>
+                    </div>
+                </div>
+                <div class="workshop-photo-card">
+                    <img src="assets/images/services/hero_mechanic.jpg" alt="Kỹ thuật viên kiểm tra động cơ" loading="lazy">
+                    <div class="workshop-photo-caption">
+                        <h4>Đội Ngũ Kỹ Thuật Viên Tay Nghề Cao</h4>
+                        <p>Được đào tạo bài bản từ các hãng xe lớn, chẩn đoán khoang máy và gầm tỉ mỉ, chính xác.</p>
+                    </div>
+                </div>
+                <div class="workshop-photo-card">
+                    <img src="assets/images/services/service_wheel.jpg" alt="Cân chỉnh độ chụm bánh xe" loading="lazy">
+                    <div class="workshop-photo-caption">
+                        <h4>Cân Thước Lái & Cân Mâm Bấm Chì</h4>
+                        <p>Đo đạc góc đặt bánh xe bằng tia hồng ngoại 3D, cân bằng động mâm lốp triệt tiêu rung lắc.</p>
+                    </div>
+                </div>
+                <div class="workshop-photo-card">
+                    <img src="assets/images/services/service_paint.jpg" alt="Phòng sơn sấy hồng ngoại" loading="lazy">
+                    <div class="workshop-photo-caption">
+                        <h4>Phòng Sơn Sấy Hồng Ngoại Chuẩn Đức</h4>
+                        <p>Phòng hấp nhiệt khép kín, lọc bụi tuần hoàn, pha màu vi tính chuẩn xác 100% màu sơn gốc.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="guarantees-banner">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <i class="fas fa-shield-alt" style="font-size: 2rem; color: #34d399;"></i>
@@ -1789,16 +2056,30 @@ foreach ($myRepairs as $r) {
 
         <div class="services-grid">
             <?php foreach ($services as $s): ?>
+                <?php 
+                    $srvImg = $serviceImages[$s['ma_dv']] ?? 'assets/images/services/hero_workshop.jpg';
+                ?>
                 <div class="service-card">
-                    <div>
-                        <div class="service-icon"><i class="fas fa-wrench"></i></div>
-                        <h3><?= htmlspecialchars($s['ten_dv']) ?></h3>
-                        <p class="service-desc">
-                            <?= htmlspecialchars($s['mo_ta'] ?? 'Dịch vụ kỹ thuật tiêu chuẩn chất lượng cao dành cho tất cả các dòng xe ô tô.') ?>
-                        </p>
+                    <div class="service-img-wrapper">
+                        <img src="<?= $srvImg ?>" alt="<?= htmlspecialchars($s['ten_dv']) ?>" loading="lazy">
+                        <span class="service-img-badge"><i class="fas fa-certificate"></i> Chuẩn Châu Âu</span>
                     </div>
-                    <div class="service-price">
-                        <?= number_format((float)$s['gia_tieu_chuan']) ?> VNĐ
+                    <div class="service-body">
+                        <div>
+                            <div class="service-icon"><i class="fas fa-wrench"></i></div>
+                            <h3><?= htmlspecialchars($s['ten_dv']) ?></h3>
+                            <p class="service-desc">
+                                <?= htmlspecialchars($s['mo_ta'] ?? 'Dịch vụ kỹ thuật tiêu chuẩn chất lượng cao dành cho tất cả các dòng xe ô tô.') ?>
+                            </p>
+                        </div>
+                        <div class="service-footer">
+                            <div class="service-price">
+                                <?= number_format((float)$s['gia_tieu_chuan']) ?> VNĐ
+                            </div>
+                            <a href="#dat-lich" class="btn btn-sm btn-primary" style="font-weight: 700; border-radius: 6px;">
+                                <i class="fas fa-calendar-alt"></i> Đặt lịch
+                            </a>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -1993,38 +2274,89 @@ foreach ($myRepairs as $r) {
         <div class="section-header">
             <span class="section-badge">Kho Linh Kiện Chuẩn</span>
             <h2>KHO VẬT TƯ & PHỤ TÙNG CHÍNH HÃNG</h2>
-            <p>100% linh kiện chính ngạch từ các đối tác hàng đầu: Bosch, Denso, GS Battery, Castrol, Motul</p>
+            <p>100% linh kiện chính ngạch có sẵn tại kho: Bosch, Denso, GS Battery, Castrol, Motul, Michelin</p>
         </div>
 
-        <div class="table-responsive">
-            <table class="table-custom table-hover">
-                <thead>
-                    <tr>
-                        <th>Tên phụ tùng</th>
-                        <th>Đơn vị tính</th>
-                        <th>Nhà cung cấp</th>
-                        <th>Tình trạng kho</th>
-                        <th>Giá niêm yết</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($parts as $p): ?>
+        <!-- Lưới thẻ hình ảnh phụ tùng sinh động -->
+        <div class="parts-grid">
+            <?php foreach ($parts as $p): ?>
+                <?php 
+                    $pImg = $partImages[$p['ma_pt']] ?? 'assets/images/parts/part_oil_castrol.jpg';
+                    $brandName = $p['ten_ncc'] ?? 'Chính Hãng';
+                ?>
+                <div class="part-card">
+                    <div>
+                        <div class="part-img-container">
+                            <img src="<?= $pImg ?>" alt="<?= htmlspecialchars($p['ten_pt']) ?>" loading="lazy">
+                            <span class="part-brand-tag"><i class="fas fa-shield-alt"></i> <?= htmlspecialchars($brandName) ?></span>
+                        </div>
+                        <h4 class="part-card-title"><?= htmlspecialchars($p['ten_pt']) ?></h4>
+                        <div class="part-card-meta">
+                            <span>Đơn vị: <b><?= htmlspecialchars($p['don_vi_tinh']) ?></b></span>
+                            <?php if ($p['so_luong_ton'] > 0): ?>
+                                <span class="badge badge-success"><i class="fas fa-check"></i> Còn hàng (<?= $p['so_luong_ton'] ?>)</span>
+                            <?php else: ?>
+                                <span class="badge badge-danger">Tạm hết hàng</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="part-card-price">
+                            <?= number_format((float)$p['gia_ban']) ?> đ
+                        </div>
+                        <a href="#dat-lich" class="btn btn-sm btn-outline-primary btn-block" style="font-weight: 700; border-radius: 6px; padding: 8px 12px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <i class="fas fa-tools"></i> Đặt lịch thay lắp phụ tùng
+                        </a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Bảng kê tổng hợp đầy đủ -->
+        <div style="margin-top: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #334155;">
+                    <i class="fas fa-list-ul"></i> Bảng niêm yết chi tiết & tra cứu quy cách
+                </h4>
+                <span style="font-size: 0.85rem; color: #64748b;">Tổng cộng <b><?= count($parts) ?></b> mặt hàng trong kho</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table-custom table-hover">
+                    <thead>
                         <tr>
-                            <td><b><?= htmlspecialchars($p['ten_pt']) ?></b></td>
-                            <td><?= htmlspecialchars($p['don_vi_tinh']) ?></td>
-                            <td><?= htmlspecialchars($p['ten_ncc']) ?></td>
-                            <td>
-                                <?php if ($p['so_luong_ton'] > 0): ?>
-                                    <span class="badge badge-success"><i class="fas fa-check"></i> Còn hàng (<?= $p['so_luong_ton'] ?>)</span>
-                                <?php else: ?>
-                                    <span class="badge badge-danger">Tạm hết hàng</span>
-                                <?php endif; ?>
-                            </td>
-                            <td style="font-weight: 800; color: #1e40af; font-size: 1.05rem;"><?= number_format((float)$p['gia_ban']) ?> đ</td>
+                            <th style="width: 70px; text-align: center;">Hình ảnh</th>
+                            <th>Tên phụ tùng</th>
+                            <th>Đơn vị tính</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Tình trạng kho</th>
+                            <th style="text-align: right;">Giá niêm yết</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($parts as $p): ?>
+                            <?php 
+                                $pImg = $partImages[$p['ma_pt']] ?? 'assets/images/parts/part_oil_castrol.jpg';
+                            ?>
+                            <tr>
+                                <td style="text-align: center;">
+                                    <img src="<?= $pImg ?>" alt="<?= htmlspecialchars($p['ten_pt']) ?>" style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                </td>
+                                <td><b><?= htmlspecialchars($p['ten_pt']) ?></b></td>
+                                <td><?= htmlspecialchars($p['don_vi_tinh']) ?></td>
+                                <td><?= htmlspecialchars($p['ten_ncc']) ?></td>
+                                <td>
+                                    <?php if ($p['so_luong_ton'] > 0): ?>
+                                        <span class="badge badge-success"><i class="fas fa-check"></i> Còn hàng (<?= $p['so_luong_ton'] ?>)</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-danger">Tạm hết hàng</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="font-weight: 800; color: #1e40af; font-size: 1.05rem; text-align: right;"><?= number_format((float)$p['gia_ban']) ?> đ</td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 

@@ -14,6 +14,15 @@
             }
         }
     }
+
+    $partThumbnails = [
+        1 => 'assets/images/parts/part_oil_castrol.jpg',
+        2 => 'assets/images/parts/part_filter_toyota.jpg',
+        3 => 'assets/images/parts/part_brake_mazda.jpg',
+        4 => 'assets/images/parts/part_sparkplug_ngk.jpg',
+        5 => 'assets/images/parts/part_tire_michelin.jpg',
+        6 => 'assets/images/parts/part_battery_gs.jpg',
+    ];
 ?>
 
 <!-- 1. TIÊU ĐỀ & THANH CÔNG CỤ TẬP TRUNG -->
@@ -329,6 +338,7 @@
                         <thead>
                             <tr>
                                 <th style="width: 55px; text-align: center;">Mã</th>
+                                <th style="width: 65px; text-align: center;">Hình Ảnh</th>
                                 <th>Tên Phụ Tùng &amp; Quy Cách</th>
                                 <th>Kho Lưu Trữ</th>
                                 <th>Nhà Cung Cấp</th>
@@ -343,7 +353,7 @@
                         <tbody>
                             <?php if (empty($parts)): ?>
                                 <tr>
-                                    <td colspan="10" style="text-align: center; padding: 35px 20px; color: #64748b;">
+                                    <td colspan="11" style="text-align: center; padding: 35px 20px; color: #64748b;">
                                         <i class="fas fa-box-open" style="font-size: 2.5rem; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
                                         Không tìm thấy mặt hàng phụ tùng nào phù hợp với bộ lọc hiện tại.<br>
                                         <a href="index.php?c=part&a=import" class="btn btn-sm btn-warning" style="margin-top: 12px; font-weight: 700;">
@@ -357,10 +367,14 @@
                                         $isLow = ((int)$p['so_luong_ton'] <= (int)$p['muc_canh_bao']); 
                                         $khoTen = $p['ten_kho'] ?? 'Kho Tổng Phụ Tùng Trung Tâm';
                                         $khoId = (int)($p['ma_kho'] ?? 1);
+                                        $thumb = $partThumbnails[$p['ma_pt']] ?? 'assets/images/parts/part_oil_castrol.jpg';
                                     ?>
                                     <tr style="<?= $isLow ? 'background-color: rgba(239, 68, 68, 0.05);' : '' ?>">
                                         <td style="text-align: center; font-weight: 700; color: #64748b;">
                                             #<?= $p['ma_pt'] ?>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <img src="<?= $thumb ?>" alt="<?= htmlspecialchars($p['ten_pt']) ?>" style="width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; display: inline-block;">
                                         </td>
                                         <td>
                                             <div style="font-weight: 700; color: #0f172a; font-size: 0.96rem;">
