@@ -4,12 +4,14 @@ require_once __DIR__ . '/../models/RepairModel.php';
 require_once __DIR__ . '/../models/CarModel.php';
 require_once __DIR__ . '/../models/ServiceModel.php';
 require_once __DIR__ . '/../models/PartModel.php';
+require_once __DIR__ . '/../models/InvoiceModel.php';
 
 class RepairController extends BaseController {
     private RepairModel $repairModel;
     private CarModel $carModel;
     private ServiceModel $serviceModel;
     private PartModel $partModel;
+    private InvoiceModel $invoiceModel;
 
     public function __construct() {
         parent::__construct();
@@ -17,6 +19,7 @@ class RepairController extends BaseController {
         $this->carModel = new CarModel();
         $this->serviceModel = new ServiceModel();
         $this->partModel = new PartModel();
+        $this->invoiceModel = new InvoiceModel();
     }
 
     public function index(): void {
@@ -70,13 +73,15 @@ class RepairController extends BaseController {
         $parts = $this->repairModel->getPartsByRepairId($id);
         $allServices = $this->serviceModel->getAllServices(true);
         $allParts = $this->partModel->getAllParts();
+        $invoice = $this->invoiceModel->getInvoiceByRepairId($id);
 
         $this->render('repair/detail', [
             'psc'         => $psc,
             'services'    => $services,
             'parts'       => $parts,
             'allServices' => $allServices,
-            'allParts'    => $allParts
+            'allParts'    => $allParts,
+            'invoice'     => $invoice
         ]);
     }
 
@@ -173,6 +178,46 @@ class RepairController extends BaseController {
         }
     }
 
+    /**
+     * Thu tiền và quyết toán thanh toán trực tiếp ngay trên Phiếu Sửa Chữa (Hợp nhất 2 trong 1)
+     */
+    public function pay(): void {
+        $this->requireRole(['TiepNhan', 'KyThuat', 'QuanLy']);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $maPsc      = (int)($_POST['ma_psc'] ?? 0);
+            $soTienThu  = (float)($_POST['so_tien_thu'] ?? 0);
+            $phuongThuc = trim($_POST['phuong_thuc'] ?? 'TienMat');
+            $maNv       = (int)($_SESSION['user']['ma_nv'] ?? 1);
+
+            if ($maPsc <= 0 || $soTienThu <= 0) {
+                $this->setFlash('danger', 'Vui lòng nhập số tiền thanh toán hợp lệ (lớn hơn 0).');
+                $this->redirect('index.php?c=repair&a=detail&id=' . $maPsc);
+            }
+
+            $res = $this->invoiceModel->createInvoice($maPsc, $maNv, $soTienThu, $phuongThuc);
+            if ($res['success']) {
+                $emailNotice = "";
+                // Tự động gửi email biên nhận thanh toán kèm file PDF 1 trang chính thức cho khách hàng
+                try {
+                    require_once __DIR__ . '/../models/EmailService.php';
+                    $emailService = new EmailService();
+                    $emailRes = $emailService->sendInvoiceReceipt((int)$res['ma_hd']);
+                    if (!empty($emailRes['success'])) {
+                        $emailNotice = " " . $emailRes['message'];
+                    }
+                } catch (Exception $e) {
+                    // Tránh gián đoạn nếu lỗi SMTP
+                }
+
+                $this->setFlash('success', "Thanh toán thành công! Đã tạo hóa đơn {$res['ma_hd_code']} và hoàn tất phiếu sửa chữa #{$maPsc}.{$emailNotice}");
+            } else {
+                $this->setFlash('danger', $res['message']);
+            }
+            $this->redirect('index.php?c=repair&a=detail&id=' . $maPsc);
+        }
+        $this->redirect('index.php?c=repair&a=index');
+    }
+
     public function downloadPdf(): void {
         $this->requireRole(['TiepNhan', 'KyThuat', 'QuanLy', 'KhachHang']);
         $id = (int)($_GET['id'] ?? 0);
@@ -226,11 +271,13 @@ class RepairController extends BaseController {
 
         $services = $this->repairModel->getServicesByRepairId($id);
         $parts = $this->repairModel->getPartsByRepairId($id);
+        $invoice = $this->invoiceModel->getInvoiceByRepairId($id);
 
         $this->render('repair/print', [
             'psc'      => $psc,
             'services' => $services,
             'parts'    => $parts,
+            'invoice'  => $invoice,
             'isStaff'  => $isStaff
         ], 'none');
     }

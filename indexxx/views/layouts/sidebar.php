@@ -91,19 +91,19 @@ $currentA = $_GET['a'] ?? 'index';
             </a>
         </li>
 
-        <!-- 4. Lập phiếu sửa chữa -->
+        <!-- 4. Lập phiếu sửa chữa & Thu tiền tích hợp -->
         <li class="sidebar-nav-item <?= ($currentC === 'repair') ? 'active' : '' ?>">
-            <a href="index.php?c=repair&a=index" class="sidebar-nav-link" data-title="Phiếu sửa chữa" title="Phiếu sửa chữa">
+            <a href="index.php?c=repair&a=index" class="sidebar-nav-link" data-title="Phiếu sửa &amp; Thu tiền" title="Phiếu sửa chữa &amp; Quyết toán thu tiền">
                 <div><i class="fas fa-tools"></i></div>
-                <span>Phiếu sửa chữa</span>
+                <span>Sửa chữa &amp; Thu tiền</span>
             </a>
         </li>
 
-        <!-- 5. Lập phiếu thu tiền -->
+        <!-- 5. Lập phiếu thu tiền & Sổ hóa đơn -->
         <li class="sidebar-nav-item <?= ($currentC === 'invoice') ? 'active' : '' ?>">
-            <a href="index.php?c=invoice&a=index" class="sidebar-nav-link" data-title="Phiếu thu tiền" title="Phiếu thu tiền">
+            <a href="index.php?c=invoice&a=index" class="sidebar-nav-link" data-title="Hóa đơn thu tiền" title="Sổ hóa đơn &amp; Biên lai thu tiền">
                 <div><i class="fas fa-file-invoice-dollar"></i></div>
-                <span>Phiếu thu tiền</span>
+                <span>Hóa đơn thu tiền</span>
             </a>
         </li>
 

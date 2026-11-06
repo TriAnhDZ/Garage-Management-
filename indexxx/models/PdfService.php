@@ -55,7 +55,9 @@ class PdfService {
      */
     public function generateRepairPdf($target): string {
         require_once __DIR__ . '/RepairModel.php';
+        require_once __DIR__ . '/InvoiceModel.php';
         $repairModel = new RepairModel();
+        $invoiceModel = new InvoiceModel();
 
         if (is_array($target)) {
             $psc = $target;
@@ -73,9 +75,10 @@ class PdfService {
 
         $services = $repairModel->getServicesByRepairId($maPsc);
         $parts = $repairModel->getPartsByRepairId($maPsc);
+        $invoice = $invoiceModel->getInvoiceByRepairId($maPsc);
 
         // Render HTML riêng biệt sạch sẽ, không có nút bấm điều hướng
-        $html = $this->renderRepairHtml($psc, $services, $parts);
+        $html = $this->renderRepairHtml($psc, $services, $parts, $invoice);
 
         $ok = $this->convertHtmlToPdf($html, $outputFile);
         if (!$ok || !file_exists($outputFile)) {
@@ -272,13 +275,14 @@ class PdfService {
     /**
      * Template HTML chuyên biệt xuất PDF Phiếu sửa chữa (Tiêu chuẩn xưởng dịch vụ ô tô cao cấp, 1 trang A4)
      */
-    private function renderRepairHtml(array $psc, array $services, array $parts): string {
+    private function renderRepairHtml(array $psc, array $services, array $parts, ?array $invoice = null): string {
         $ngayLap = date('d/m/Y H:i', strtotime($psc['ngay_lap']));
         $tongTien = (float)$psc['tong_tien'];
         $tongTienFormatted = number_format($tongTien);
         $soPsc = "#PSC" . str_pad((string)$psc['ma_psc'], 6, '0', STR_PAD_LEFT);
         $signatureBase64 = $this->getSignatureBase64();
         $tienChu = $this->numberToVietnameseWords($tongTien);
+        $daThanhToan = ($psc['trang_thai'] === 'DaThanhToan' || !empty($invoice));
 
         $tienCong = 0;
         $servicesHtml = '';
@@ -385,13 +389,14 @@ class PdfService {
                     <b>Website:</b> www.garapro.vn &nbsp;|&nbsp; <b>Email:</b> contact@garapro.vn
                 </div>
             </td>
-            <td style="width: 42%; text-align: right;">
-                <div class="doc-title-main">PHIẾU SỬA CHỮA</div>
-                <div class="doc-title-sub">VEHICLE REPAIR ORDER &amp; JOB CARD</div>
+            <td style="width: 48%; text-align: right;">
+                <div class="doc-title-main">' . ($daThanhToan ? 'PHIẾU SỬA CHỮA &amp; HÓA ĐƠN' : 'PHIẾU SỬA CHỮA') . '</div>
+                <div class="doc-title-sub">' . ($daThanhToan ? 'NGHIỆM THU KIÊM HÓA ĐƠN QUYẾT TOÁN' : 'VEHICLE REPAIR ORDER &amp; JOB CARD') . '</div>
                 <div class="doc-meta-badge">
-                    <div>Lệnh sửa chữa: <b style="color: #1e40af; font-family: monospace; font-size: 9pt;">' . $soPsc . '</b></div>
-                    <div>Ngày lập phiếu: <b>' . $ngayLap . '</b></div>
-                    <div>Trạng thái: <b style="color: #047857;">' . htmlspecialchars($psc['trang_thai']) . '</b></div>
+                    <div>Lệnh sửa chữa: <b style="color: #1e40af; font-family: monospace; font-size: 8.5pt;">' . $soPsc . '</b></div>
+                    ' . (!empty($invoice) ? '<div>Mã hóa đơn: <b style="color: #047857; font-family: monospace; font-size: 8.5pt;">' . htmlspecialchars($invoice['ma_hd_code'] ?? ('#HD' . $invoice['ma_hd'])) . '</b></div>
+                    <div>Thanh toán: <b style="color: #047857;">' . ($invoice['phuong_thuc'] === 'ChuyenKhoan' ? 'Chuyển khoản (VietQR)' : 'Tiền mặt') . '</b></div>' : '<div>Trạng thái: <b style="color: #047857;">' . htmlspecialchars($psc['trang_thai']) . '</b></div>') . '
+                    <div>Ngày lập: <b>' . $ngayLap . '</b></div>
                 </div>
             </td>
         </tr>
@@ -473,6 +478,14 @@ class PdfService {
                         <span style="font-size: 7.8pt; text-transform: uppercase; font-weight: 700;">TỔNG QUYẾT TOÁN:</span>
                         <span style="font-size: 9.5pt; font-weight: 800; font-family: monospace;">' . $tongTienFormatted . ' VNĐ</span>
                     </div>
+                    ' . ($daThanhToan ? '<div class="calc-row" style="margin-top: 4px; border-top: 1px dashed #cbd5e1; padding-top: 3px;">
+                        <span style="font-weight: 700; color: #047857;">Đã thanh toán:</span>
+                        <b style="color: #047857;">' . number_format(!empty($invoice) ? (float)$invoice['tong_tien'] : $tongTien) . ' đ</b>
+                    </div>
+                    <div class="calc-row">
+                        <span style="font-weight: 700; color: #047857;">Nợ còn lại:</span>
+                        <b style="color: #047857;">0 đ (Đã tất toán)</b>
+                    </div>' : '') . '
                 </div>
             </td>
         </tr>
@@ -480,19 +493,26 @@ class PdfService {
 
     <table class="sign-table">
         <tr>
-            <td>
+            <td style="width: ' . ($daThanhToan ? '25%' : '33.33%') . ';">
                 <div class="sign-role">KHÁCH HÀNG (CHỦ XE)</div>
-                <div class="sign-note">(Ký &amp; ghi rõ họ tên)</div>
+                <div class="sign-note">' . ($daThanhToan ? '(Ký nhận xe &amp; đã thanh toán)' : '(Ký &amp; ghi rõ họ tên)') . '</div>
                 <div class="sign-box-space"></div>
+                <div style="font-weight: 700; font-size: 7.8pt; color: #0f172a;">' . htmlspecialchars($psc['ten_chu_xe']) . '</div>
             </td>
-            <td>
+            <td style="width: ' . ($daThanhToan ? '25%' : '33.33%') . ';">
                 <div class="sign-role">KỸ THUẬT VIÊN KIỂM TRA</div>
                 <div class="sign-note">(Ký xác nhận hoàn tất)</div>
                 <div class="sign-box-space"></div>
-                <div style="font-weight: 700; font-size: 8pt; color: #0f172a;">' . htmlspecialchars($psc['ten_nv'] ?? 'Tổ Kỹ Thuật') . '</div>
+                <div style="font-weight: 700; font-size: 7.8pt; color: #0f172a;">' . htmlspecialchars($psc['ten_nv'] ?? 'Tổ Kỹ Thuật') . '</div>
             </td>
-            <td>
-                <div class="sign-role">TRƯỞNG BAN KỸ THUẬT GARA PRO</div>
+            ' . ($daThanhToan ? '<td style="width: 25%;">
+                <div class="sign-role">THỦ QUỸ / THU NGÂN</div>
+                <div class="sign-note">(Đã thu đủ tiền)</div>
+                <div class="sign-box-space"></div>
+                <div style="font-weight: 700; font-size: 7.8pt; color: #0f172a;">' . htmlspecialchars(!empty($invoice['ten_nv_thu']) ? $invoice['ten_nv_thu'] : 'Thu Ngân Gara Pro') . '</div>
+            </td>' : '') . '
+            <td style="width: ' . ($daThanhToan ? '25%' : '33.33%') . ';">
+                <div class="sign-role">TRƯỞNG BAN KỸ THUẬT</div>
                 <div class="sign-box-space">
                     ' . (!empty($signatureBase64) ? '<img src="' . $signatureBase64 . '" style="max-height: 42px; max-width: 100px; display: inline-block;" alt="Chữ ký &amp; Dấu">' : '') . '
                 </div>

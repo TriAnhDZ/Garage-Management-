@@ -27,9 +27,13 @@
                             <i class="fab fa-google"></i> Mở Gmail Web
                         </a>
                     <?php endif; ?>
-                    <?php if ($psc['tien_no'] > 0): ?>
-                        <a href="index.php?c=invoice&a=create&bien_so=<?= urlencode($psc['bien_so']) ?>" class="btn btn-success">
-                            <i class="fas fa-file-invoice-dollar"></i> Lập phiếu thu tiền
+                    <?php if ($psc['trang_thai'] === 'DaThanhToan' || !empty($invoice)): ?>
+                        <a href="#section-payment" class="btn btn-success" style="font-weight: 700;">
+                            <i class="fas fa-check-circle"></i> Đã thu tiền (<?= !empty($invoice['ma_hd_code']) ? htmlspecialchars($invoice['ma_hd_code']) : 'Hóa đơn' ?>)
+                        </a>
+                    <?php elseif ($psc['tien_no'] > 0 || (float)$psc['tong_tien'] > 0): ?>
+                        <a href="#section-payment" class="btn btn-success" style="font-weight: 700;">
+                            <i class="fas fa-file-invoice-dollar"></i> Thu tiền &amp; Xuất hóa đơn
                         </a>
                     <?php endif; ?>
                 </div>
@@ -272,6 +276,264 @@
         </div>
     </div>
 </div>
+
+<?php
+$sumServices = 0;
+foreach ($services as $s) {
+    $sumServices += (float)$s['thanh_tien'];
+}
+$sumParts = 0;
+foreach ($parts as $pt) {
+    $sumParts += (float)$pt['thanh_tien'];
+}
+$tongChiPhi = (float)$psc['tong_tien'];
+if ($tongChiPhi == 0 && ($sumServices + $sumParts) > 0) {
+    $tongChiPhi = $sumServices + $sumParts;
+}
+$tienNoXe = (float)$psc['tien_no'];
+$daThanhToan = ($psc['trang_thai'] === 'DaThanhToan' || !empty($invoice));
+?>
+
+<!-- Phần 3: Quyết toán chi phí & Hóa đơn thu tiền tích hợp (Hợp nhất 2 trong 1) -->
+<div class="row" id="section-payment" style="margin-top: 10px;">
+    <div class="col-12">
+        <div class="card" style="border: 2px solid <?= $daThanhToan ? '#10b981' : '#2563eb' ?>; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.06);">
+            <div class="card-header" style="background: <?= $daThanhToan ? 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' ?>; border-bottom: 1px solid <?= $daThanhToan ? '#a7f3d0' : '#bfdbfe' ?>; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 16px 20px;">
+                <h3 style="margin: 0; color: <?= $daThanhToan ? '#065f46' : '#1e40af' ?>; display: flex; align-items: center; gap: 10px; font-size: 1.15rem;">
+                    <i class="fas <?= $daThanhToan ? 'fa-check-circle' : 'fa-cash-register' ?>"></i>
+                    <span>3. Quyết toán viện phí &amp; Hóa đơn thu tiền (Hợp nhất)</span>
+                </h3>
+                <div>
+                    <?php if ($daThanhToan): ?>
+                        <span class="badge badge-success" style="font-size: 0.95rem; padding: 7px 15px; font-weight: 700;">
+                            <i class="fas fa-check-double"></i> ĐÃ THANH TOÁN XONG
+                        </span>
+                    <?php else: ?>
+                        <span class="badge badge-warning" style="font-size: 0.95rem; padding: 7px 15px; font-weight: 700;">
+                            <i class="fas fa-clock"></i> CHỜ THU TIỀN QUYẾT TOÁN
+                        </span>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="card-content" style="padding: 24px;">
+                <!-- Tóm tắt chi phí 4 ô trực quan -->
+                <div class="row" style="margin-bottom: 22px;">
+                    <div class="col-12 col-m-3" style="margin-bottom: 10px;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
+                            <div style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">1. Tiền công dịch vụ</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #1e293b; margin-top: 4px;"><?= number_format($sumServices) ?> đ</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-m-3" style="margin-bottom: 10px;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px;">
+                            <div style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 700;">2. Tiền vật tư phụ tùng</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #1e293b; margin-top: 4px;"><?= number_format($sumParts) ?> đ</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-m-3" style="margin-bottom: 10px;">
+                        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 16px;">
+                            <div style="font-size: 0.8rem; color: #1d4ed8; text-transform: uppercase; font-weight: 700;">Tổng chi phí phiếu sửa chữa</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: #1e40af; margin-top: 4px;"><?= number_format($tongChiPhi) ?> đ</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-m-3" style="margin-bottom: 10px;">
+                        <div style="background: <?= $tienNoXe > 0 ? '#fef2f2' : '#f0fdf4' ?>; border: 1px solid <?= $tienNoXe > 0 ? '#fecaca' : '#bbf7d0' ?>; border-radius: 8px; padding: 14px 16px;">
+                            <div style="font-size: 0.8rem; color: <?= $tienNoXe > 0 ? '#b91c1c' : '#15803d' ?>; text-transform: uppercase; font-weight: 700;">Tiền nợ hiện tại của xe</div>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: <?= $tienNoXe > 0 ? '#dc2626' : '#16a34a' ?>; margin-top: 4px;"><?= number_format($tienNoXe) ?> đ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <?php if ($daThanhToan && !empty($invoice)): ?>
+                    <!-- KHỐI HÓA ĐƠN ĐÃ THANH TOÁN -->
+                    <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 22px; margin-bottom: 10px;">
+                        <div class="row" style="align-items: center;">
+                            <div class="col-12 col-m-8">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <span style="font-size: 1.4rem; font-weight: 800; color: #166534;">
+                                        <i class="fas fa-file-invoice"></i> <?= htmlspecialchars($invoice['ma_hd_code'] ?? ('#HD' . $invoice['ma_hd'])) ?>
+                                    </span>
+                                    <span class="badge badge-success" style="font-size: 0.85rem;">
+                                        <?= ($invoice['phuong_thuc'] === 'ChuyenKhoan') ? 'Chuyển khoản (VietQR)' : 'Tiền mặt' ?>
+                                    </span>
+                                </div>
+                                <p style="margin: 4px 0; color: #374151; font-size: 0.95rem;">
+                                    <b>Số tiền đã thu:</b> <span style="font-size: 1.25rem; font-weight: 800; color: #15803d;"><?= number_format((float)$invoice['tong_tien']) ?> đ</span>
+                                </p>
+                                <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;">
+                                    <b>Thời gian quyết toán:</b> <?= date('d/m/Y H:i', strtotime($invoice['ngay_thanh_toan'])) ?> &nbsp;|&nbsp;
+                                    <b>Người thu tiền:</b> <?= htmlspecialchars($invoice['ten_nv_thu'] ?? 'Thu ngân Gara Pro') ?>
+                                </p>
+                                <p style="margin: 4px 0; color: #4b5563; font-size: 0.9rem;">
+                                    <b>Tình trạng nợ xe:</b> <span style="color: #16a34a; font-weight: 700;">Đã thanh toán đủ (0 đ)</span>
+                                </p>
+                            </div>
+                            <div class="col-12 col-m-4" style="text-align: right; display: flex; flex-direction: column; gap: 8px;">
+                                <a href="index.php?c=repair&a=print&id=<?= $psc['ma_psc'] ?>" target="_blank" onclick="window.open(this.href, 'print_repair', 'width=1050,height=850,scrollbars=yes'); return false;" class="btn btn-success" style="font-weight: 700; padding: 10px 16px;">
+                                    <i class="fas fa-print"></i> In Phiếu &amp; Hóa đơn hợp nhất
+                                </a>
+                                <a href="index.php?c=invoice&a=print&id=<?= $invoice['ma_hd'] ?>" target="_blank" onclick="window.open(this.href, 'print_inv', 'width=950,height=850,scrollbars=yes'); return false;" class="btn btn-secondary" style="font-size: 0.88rem;">
+                                    <i class="fas fa-file-invoice-dollar"></i> In riêng hóa đơn bán lẻ
+                                </a>
+                                <a href="index.php?c=invoice&a=downloadPdf&id=<?= $invoice['ma_hd'] ?>" class="btn btn-primary" style="font-size: 0.88rem;">
+                                    <i class="fas fa-file-pdf"></i> Tải hóa đơn PDF
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <!-- FORM THU TIỀN TRỰC TIẾP TẠI CHỖ (HỢP NHẤT KHÔNG CẦN CHUYỂN TRANG) -->
+                    <form method="POST" action="index.php?c=repair&a=pay" style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 22px;">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="ma_psc" value="<?= $psc['ma_psc'] ?>">
+
+                        <div style="font-weight: 700; color: #1e293b; font-size: 1.05rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-coins text-warning"></i>
+                            <span>Biểu mẫu thu tiền &amp; Xuất hóa đơn nghiệm thu xe</span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-m-6">
+                                <label style="font-weight: 700; font-size: 0.92rem; color: #1e293b;">
+                                    Số tiền thanh toán (VNĐ): <span style="color:red">*</span>
+                                </label>
+                                <?php
+                                $suggestAmount = ($tienNoXe > 0) ? min($tongChiPhi > 0 ? $tongChiPhi : $tienNoXe, $tienNoXe) : $tongChiPhi;
+                                if ($suggestAmount <= 0 && $tienNoXe > 0) {
+                                    $suggestAmount = $tienNoXe;
+                                }
+                                ?>
+                                <input type="number" 
+                                       name="so_tien_thu" 
+                                       id="input_so_tien_thu" 
+                                       class="form-control" 
+                                       style="font-size: 1.25rem; font-weight: 800; color: #1e40af; padding: 10px 14px;" 
+                                       value="<?= (int)$suggestAmount ?>" 
+                                       min="1" 
+                                       max="<?= (int)$tienNoXe > 0 ? (int)$tienNoXe : 999999999 ?>" 
+                                       required
+                                       oninput="updateQrAmount(this.value)">
+
+                                <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                                    <?php if ($tongChiPhi > 0): ?>
+                                        <button type="button" class="btn btn-sm btn-secondary" onclick="setPaymentAmount(<?= (int)$tongChiPhi ?>)">
+                                            Đúng tiền phiếu (<?= number_format($tongChiPhi) ?> đ)
+                                        </button>
+                                    <?php endif; ?>
+                                    <?php if ($tienNoXe > 0 && $tienNoXe != $tongChiPhi): ?>
+                                        <button type="button" class="btn btn-sm btn-secondary" onclick="setPaymentAmount(<?= (int)$tienNoXe ?>)">
+                                            Toàn bộ nợ xe (<?= number_format($tienNoXe) ?> đ)
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                                <small style="color: #64748b; font-size: 0.8rem; display: block; margin-top: 6px;">
+                                    * Theo quy định Gara: Số tiền thu không vượt quá tổng nợ của xe (<?= number_format($tienNoXe) ?> đ).
+                                </small>
+                            </div>
+
+                            <div class="col-12 col-m-6">
+                                <label style="font-weight: 700; font-size: 0.92rem; color: #1e293b; margin-bottom: 8px; display: block;">
+                                    Phương thức thanh toán: <span style="color:red">*</span>
+                                </label>
+                                <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                                    <label style="flex: 1; border: 2px solid #cbd5e1; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; background: #ffffff;" id="label-method-cash">
+                                        <input type="radio" name="phuong_thuc" value="TienMat" checked onchange="togglePaymentMethod('TienMat')">
+                                        <div>
+                                            <div style="font-weight: 700; color: #1e293b;"><i class="fas fa-money-bill-wave text-success"></i> Tiền mặt</div>
+                                            <small style="color: #64748b; font-size: 0.78rem;">Thu ngân nhận tiền trực tiếp</small>
+                                        </div>
+                                    </label>
+                                    <label style="flex: 1; border: 2px solid #cbd5e1; border-radius: 8px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; background: #ffffff;" id="label-method-bank">
+                                        <input type="radio" name="phuong_thuc" value="ChuyenKhoan" onchange="togglePaymentMethod('ChuyenKhoan')">
+                                        <div>
+                                            <div style="font-weight: 700; color: #1e293b;"><i class="fas fa-qrcode text-primary"></i> Chuyển khoản</div>
+                                            <small style="color: #64748b; font-size: 0.78rem;">Quét mã VietQR chuyển khoản</small>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Box VietQR hiển thị khi chọn Chuyển khoản -->
+                                <div id="vietqr-box" style="display: none; background: #ffffff; border: 1.5px dashed #3b82f6; border-radius: 8px; padding: 12px; margin-bottom: 12px; text-align: center;">
+                                    <div style="font-size: 0.85rem; font-weight: 700; color: #1e40af; margin-bottom: 6px;">
+                                        <i class="fas fa-qrcode"></i> Quét mã VietQR để thanh toán nhanh
+                                    </div>
+                                    <div style="display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap;">
+                                        <img id="vietqr-img" 
+                                             src="https://api.vietqr.io/image/970422-0825893162-compact2.jpg?amount=<?= (int)$suggestAmount ?>&addInfo=<?= urlencode('Thanh toan PSC ' . $psc['ma_psc'] . ' ' . $psc['bien_so']) ?>&accountName=GARAGE%20PRO" 
+                                             alt="Mã QR thanh toán VietQR" 
+                                             style="max-width: 140px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                        <div style="text-align: left; font-size: 0.82rem; color: #334155;">
+                                            <div>Ngân hàng: <b>MBBank (Quân Đội)</b></div>
+                                            <div>Số tài khoản: <b style="color: #1e40af; font-size: 0.95rem;">0825.893.162</b></div>
+                                            <div>Chủ tài khoản: <b>GARAGE PRO HÀ NỘI</b></div>
+                                            <div>Nội dung: <b style="color: #059669;">PSC <?= $psc['ma_psc'] ?> <?= htmlspecialchars($psc['bien_so']) ?></b></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                            <button type="submit" 
+                                    class="btn btn-success" 
+                                    style="padding: 12px 28px; font-size: 1.05rem; font-weight: 800; display: inline-flex; align-items: center; gap: 10px;"
+                                    onclick="if(!confirm('Xác nhận thu ' + Number(document.getElementById('input_so_tien_thu').value).toLocaleString() + ' đ và lập hóa đơn hoàn tất phiếu sửa chữa?')) return false; this.innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Đang xử lý thanh toán...'; this.disabled=true; this.form.submit();">
+                                <i class="fas fa-check-circle"></i> Xác nhận Thu tiền &amp; Lập hóa đơn
+                            </button>
+                        </div>
+                    </form>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setPaymentAmount(val) {
+    const input = document.getElementById('input_so_tien_thu');
+    if (input) {
+        input.value = val;
+        updateQrAmount(val);
+    }
+}
+
+function updateQrAmount(val) {
+    const qrImg = document.getElementById('vietqr-img');
+    if (qrImg) {
+        const amount = parseInt(val) || 0;
+        qrImg.src = `https://api.vietqr.io/image/970422-0825893162-compact2.jpg?amount=${amount}&addInfo=<?= urlencode('Thanh toan PSC ' . $psc['ma_psc'] . ' ' . $psc['bien_so']) ?>&accountName=GARAGE%20PRO`;
+    }
+}
+
+function togglePaymentMethod(method) {
+    const qrBox = document.getElementById('vietqr-box');
+    const labelCash = document.getElementById('label-method-cash');
+    const labelBank = document.getElementById('label-method-bank');
+
+    if (method === 'ChuyenKhoan') {
+        if (qrBox) qrBox.style.display = 'block';
+        if (labelBank) {
+            labelBank.style.borderColor = '#2563eb';
+            labelBank.style.backgroundColor = '#eff6ff';
+        }
+        if (labelCash) {
+            labelCash.style.borderColor = '#cbd5e1';
+            labelCash.style.backgroundColor = '#ffffff';
+        }
+    } else {
+        if (qrBox) qrBox.style.display = 'none';
+        if (labelCash) {
+            labelCash.style.borderColor = '#16a34a';
+            labelCash.style.backgroundColor = '#f0fdf4';
+        }
+        if (labelBank) {
+            labelBank.style.borderColor = '#cbd5e1';
+            labelBank.style.backgroundColor = '#ffffff';
+        }
+    }
+}
+</script>
 
 <script>
 // Dữ liệu dịch vụ cho tính năng gợi ý & tự động điền đơn giá

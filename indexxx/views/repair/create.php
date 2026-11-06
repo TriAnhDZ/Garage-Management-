@@ -2,9 +2,12 @@
     <div class="col-12 col-m-6" style="margin: 0 auto;">
         <div class="card">
             <div class="card-header">
-                <h3><i class="fas fa-file-signature"></i> Lập phiếu sửa chữa mới</h3>
+                <h3><i class="fas fa-file-signature"></i> Lập phiếu sửa chữa &amp; Thu tiền tích hợp</h3>
             </div>
             <div class="card-content">
+                <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; margin-bottom: 18px; font-size: 0.88rem; color: #1e40af;">
+                    <i class="fas fa-info-circle"></i> <b>Quy trình tích hợp 2 trong 1:</b> Sau khi khởi tạo phiếu, bạn có thể xuất vật tư, dịch vụ và thực hiện <b>thu tiền / xuất hóa đơn trực tiếp</b> ngay tại chỗ mà không cần chuyển qua trang phiếu thu riêng.
+                </div>
                 <form method="POST" action="index.php?c=repair&a=store">
                     <?= csrf_field() ?>
                     <div class="form-group">

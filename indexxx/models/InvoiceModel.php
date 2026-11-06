@@ -110,6 +110,31 @@ class InvoiceModel extends BaseModel {
         return $inv;
     }
 
+    /**
+     * Lấy hóa đơn thanh toán theo mã phiếu sửa chữa
+     */
+    public function getInvoiceByRepairId(int $maPsc): ?array {
+        $sql = "SELECT hd.*, 
+                       psc.ma_xe, psc.ngay_lap AS ngay_lap_psc, psc.tong_tien AS tong_tien_sua,
+                       x.bien_so, x.hang_xe, x.dong_xe, x.nam_san_xuat, x.tien_no,
+                       kh.ma_kh, nd_kh.ho_ten AS ten_chu_xe, nd_kh.sdt AS sdt_chu_xe, nd_kh.email AS email_chu_xe, kh.dia_chi,
+                       nd_nv.ho_ten AS ten_nv_thu, nv.chuc_vu
+                FROM hoa_don hd
+                JOIN phieu_sua_chua psc ON hd.ma_psc = psc.ma_psc
+                JOIN xe x ON psc.ma_xe = x.ma_xe
+                JOIN khach_hang kh ON x.ma_kh = kh.ma_kh
+                JOIN nguoi_dung nd_kh ON kh.ma_nd = nd_kh.ma_nd
+                LEFT JOIN nhan_vien nv ON hd.ma_nv = nv.ma_nv
+                LEFT JOIN nguoi_dung nd_nv ON nv.ma_nd = nd_nv.ma_nd
+                WHERE hd.ma_psc = ?
+                ORDER BY hd.ma_hd DESC LIMIT 1";
+        $inv = $this->fetchOne($sql, [$maPsc]);
+        if ($inv) {
+            $inv['ma_hd_code'] = $this->formatInvoiceCode($inv, true);
+        }
+        return $inv;
+    }
+
     public function getCarPaymentInfo(string $bienSo): ?array {
         $car = $this->carModel->getCarByPlate($bienSo);
         if (!$car) {

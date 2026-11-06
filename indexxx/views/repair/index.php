@@ -90,10 +90,15 @@
                                             <span class="badge <?= $badge ?>"><?= $r['trang_thai'] ?></span>
                                         </td>
                                         <td>
-                                            <a href="index.php?c=repair&a=detail&id=<?= $r['ma_psc'] ?>" class="btn btn-sm btn-primary" title="Xem chi tiết & Thêm linh kiện">
+                                            <a href="index.php?c=repair&a=detail&id=<?= $r['ma_psc'] ?>" class="btn btn-sm btn-primary" title="Xem chi tiết, vật tư & thanh toán">
                                                 <i class="fas fa-edit"></i> Chi tiết
                                             </a>
-                                            <a href="index.php?c=repair&a=print&id=<?= $r['ma_psc'] ?>" target="_blank" onclick="window.open(this.href, 'print_repair', 'width=1050,height=850,scrollbars=yes'); return false;" class="btn btn-sm btn-secondary" title="In phiếu">
+                                            <?php if ($r['trang_thai'] !== 'DaThanhToan' && ((float)$r['tong_tien'] > 0 || (float)$r['tien_no'] > 0)): ?>
+                                                <a href="index.php?c=repair&a=detail&id=<?= $r['ma_psc'] ?>#section-payment" class="btn btn-sm btn-success" title="Quyết toán &amp; Thu tiền trực tiếp">
+                                                    <i class="fas fa-file-invoice-dollar"></i> Thu tiền
+                                                </a>
+                                            <?php endif; ?>
+                                            <a href="index.php?c=repair&a=print&id=<?= $r['ma_psc'] ?>" target="_blank" onclick="window.open(this.href, 'print_repair', 'width=1050,height=850,scrollbars=yes'); return false;" class="btn btn-sm btn-secondary" title="In phiếu & Hóa đơn hợp nhất">
                                                 <i class="fas fa-print"></i>
                                             </a>
                                         </td>
