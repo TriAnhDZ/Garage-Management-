@@ -1,0 +1,42 @@
+# ==============================================================================
+# BẢO MẬT HỆ THỐNG GARA Ô TÔ - CHUẨN OWASP TOP 10 & WSTG
+# ==============================================================================
+
+# 1. Tắt hiển thị danh sách thư mục (Directory Browsing) - CWE-548
+Options -Indexes
+
+# 2. Xóa các HTTP Header làm lộ thông tin hệ điều hành & phiên bản PHP / Apache (CWE-497 / CWE-1395)
+<IfModule mod_headers.c>
+    Header always unset X-Powered-By
+    Header unset X-Powered-By
+    Header always unset Server
+    Header unset Server
+
+    # 3. Chống tấn công Clickjacking (CWE-1021 / WSTG-v42-CLNT-09)
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # 4. Chống tấn công MIME-Type Sniffing (CWE-693)
+    Header always set X-Content-Type-Options "nosniff"
+
+    # 5. Chính sách Referrer Policy chuẩn mực
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # 6. Hạn chế quyền phần cứng trình duyệt (Permissions Policy)
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+
+    # 7. Kích hoạt bộ lọc XSS của trình duyệt
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # 8. Content Security Policy (CSP - CWE-693)
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; frame-ancestors 'self'; connect-src 'self' https:;"
+</IfModule>
+
+# 9. Ngăn chặn truy cập trái phép vào các tệp tin cấu hình, sao lưu và cơ sở dữ liệu nhạy cảm
+<FilesMatch "(^\.|\.env|\.sql|\.json|\.md|\.log|\.bak|\.ini|\.conf|composer\.)">
+    Require all denied
+</FilesMatch>
+
+# 10. Chặn truy cập trực tiếp vào các thư mục logic / models / controllers
+RewriteEngine On
+RewriteRule ^(models|controllers|config)/ - [F,L]
+

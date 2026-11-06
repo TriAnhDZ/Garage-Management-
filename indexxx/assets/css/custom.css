@@ -1,0 +1,200 @@
+/* Custom styling for Gara Car Management System */
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.45rem 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-primary { color: #fff; background-color: #4834d4; border-color: #4834d4; }
+.btn-success { color: #fff; background-color: #2ed573; border-color: #2ed573; }
+.btn-warning { color: #212529; background-color: #ffa502; border-color: #ffa502; }
+.btn-danger { color: #fff; background-color: #ff4757; border-color: #ff4757; }
+.btn-info { color: #fff; background-color: #1e90ff; border-color: #1e90ff; }
+.btn-secondary { color: #fff; background-color: #747d8c; border-color: #747d8c; }
+.btn-outline-primary { color: #4834d4; border-color: #4834d4; background: transparent; }
+.btn-outline-primary:hover { color: #fff; background-color: #4834d4; }
+.btn-sm { padding: 0.25rem 0.6rem; font-size: 0.85rem; border-radius: 4px; }
+.btn-block { display: block; width: 100%; }
+
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 20px;
+}
+.badge-primary { color: #fff; background-color: #4834d4; }
+.badge-success { color: #fff; background-color: #2ed573; }
+.badge-warning { color: #212529; background-color: #ffa502; }
+.badge-danger { color: #fff; background-color: #ff4757; }
+.badge-info { color: #fff; background-color: #1e90ff; }
+.badge-secondary { color: #fff; background-color: #747d8c; }
+
+.alert {
+    position: relative;
+    padding: 0.85rem 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+.alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+.alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+.alert-warning { color: #856404; background-color: #fff3cd; border-color: #ffeeba; }
+.alert-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+
+.form-group {
+    margin-bottom: 1.15rem;
+}
+.form-group label {
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: inherit;
+    background-color: var(--second-bg-color, #f8f9fa);
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.form-control:focus {
+    border-color: #4834d4;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(72, 52, 212, 0.2);
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.table-custom {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: #ffffff;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+}
+.table-custom th,
+.table-custom td {
+    padding: 0.85rem 1.1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e2e8f0;
+}
+.dark .table-custom th,
+.dark .table-custom td {
+    border-bottom: 1px solid #334155;
+    color: #f8fafc;
+}
+.table-custom thead th {
+    vertical-align: middle;
+    border-bottom: 2px solid #0f172a;
+    background-color: #0f172a;
+    color: #ffffff !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.82rem;
+    letter-spacing: 0.6px;
+}
+.dark .table-custom thead th {
+    background-color: #090d16;
+    border-bottom: 2px solid #475569;
+    color: #38bdf8 !important;
+}
+.table-custom tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+.table-custom tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+.table-hover tbody tr:hover {
+    background-color: #e0e7ff !important;
+}
+.dark .table-custom {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+.dark .table-custom tbody tr:nth-child(even) {
+    background-color: #1e293b;
+}
+.dark .table-custom tbody tr:nth-child(odd) {
+    background-color: #0f172a;
+}
+.dark .table-hover tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.stats-card {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    border-radius: 10px;
+    color: #fff;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.stats-icon {
+    font-size: 2.5rem;
+    margin-right: 1.2rem;
+    opacity: 0.85;
+}
+.stats-info h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+.stats-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Print styling for receipts */
+@media print {
+    .navbar, .sidebar, .btn, .card-actions, .no-print {
+        display: none !important;
+    }
+    .content, .wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
+

@@ -1,0 +1,25 @@
+# Git Ignore - Du an Quan ly Gara Oto
+
+# He dieu hanh & IDE
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Tệp nhật ký & tạm
+*.log
+*.tmp
+*.bak
+
+# Runtime storage & generated files
+indexxx/storage/pdf/*.pdf
+indexxx/storage/pdf/*.html
+!indexxx/storage/pdf/.gitkeep
+
+# Loai bo bao cao, tai lieu va hinh anh khoi git (chi giu ma nguon du an)
+baocaobaomat/
+taileu/
+images/
+*.docx
+*.mdj
