@@ -9,8 +9,8 @@ Options -Indexes
 <IfModule mod_headers.c>
     Header always unset X-Powered-By
     Header unset X-Powered-By
-    Header always unset Server
-    Header unset Server
+    Header always set Server "WebServer"
+    Header set Server "WebServer"
 
     # 3. Chống tấn công Clickjacking (CWE-1021 / WSTG-v42-CLNT-09)
     Header always set X-Frame-Options "SAMEORIGIN"
@@ -27,8 +27,10 @@ Options -Indexes
     # 7. Kích hoạt bộ lọc XSS của trình duyệt
     Header always set X-XSS-Protection "1; mode=block"
 
-    # 8. Content Security Policy (CSP - CWE-693)
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; frame-ancestors 'self'; connect-src 'self' https:;"
+    # 8. Content Security Policy (CSP - Chuẩn OWASP WSTG & Chống XSS)
+    Header always unset Content-Security-Policy
+    Header unset Content-Security-Policy
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://cdnjs.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; connect-src 'self'; frame-ancestors 'self';"
 </IfModule>
 
 # 9. Ngăn chặn truy cập trái phép vào các tệp tin cấu hình, sao lưu và cơ sở dữ liệu nhạy cảm

@@ -1,5 +1,3 @@
 User-agent: *
-Disallow: /config/
-Disallow: /controllers/
-Disallow: /models/
+Allow: /
 

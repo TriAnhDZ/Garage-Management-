@@ -36,15 +36,7 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
 header("X-XSS-Protection: 1; mode=block");
 
-// Content-Security-Policy (CSP)
-$csp = "default-src 'self'; "
-     . "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
-     . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
-     . "font-src 'self' https://fonts.gstatic.com data:; "
-     . "img-src 'self' data: https:; "
-     . "frame-ancestors 'self'; "
-     . "connect-src 'self' https:;";
-header("Content-Security-Policy: " . $csp);
+// Content-Security-Policy (CSP) đã được cấu hình chuẩn mực và đồng bộ qua .htaccess (CWE-693)
 
 // Nạp dịch vụ bảo vệ Anti-CSRF
 require_once __DIR__ . '/models/CsrfService.php';
