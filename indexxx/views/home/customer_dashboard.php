@@ -203,11 +203,19 @@ $activeRepairs = count(array_filter($myRepairs, fn($r) => in_array($r['trang_tha
                                 </tr>
                             <?php else: ?>
                                 <?php foreach (array_slice($myRepairs, 0, 5) as $rp): ?>
+                                    <?php 
+                                    $tInfo = RepairModel::getTicketTypeInfo($rp['loai_phieu'] ?? 'SuaChua');
+                                    ?>
                                     <tr>
-                                        <td><b>#<?= $rp['ma_psc'] ?></b></td>
+                                        <td>
+                                            <b>#<?= $rp['ma_psc'] ?></b><br>
+                                            <span class="badge" style="font-size: 0.72rem; background: <?= $tInfo['bg_color'] ?>; color: <?= $tInfo['color'] ?>; border: 1px solid <?= $tInfo['border_color'] ?>; padding: 2px 5px; font-weight: 700;">
+                                                <i class="<?= $tInfo['icon'] ?>"></i> <?= $tInfo['short_title'] ?>
+                                            </span>
+                                        </td>
                                         <td><span class="badge badge-info"><?= htmlspecialchars($rp['bien_so']) ?></span></td>
                                         <td><?= date('d/m/Y', strtotime($rp['ngay_lap'])) ?></td>
-                                        <td style="font-weight: 700; color: #4834d4;"><?= number_format((float)$rp['tong_tien']) ?> đ</td>
+                                        <td style="font-weight: 700; color: #1e40af;"><?= number_format((float)$rp['tong_tien']) ?> đ</td>
                                         <td>
                                             <?php
                                                 $badge = 'badge-secondary';

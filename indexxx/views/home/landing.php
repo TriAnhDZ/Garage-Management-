@@ -1691,9 +1691,10 @@ foreach ($myRepairs as $r) {
                                             </b>
                                         </div>
                                         <?php if ($repair): ?>
+                                            <?php $tInfo = RepairModel::getTicketTypeInfo($repair['loai_phieu'] ?? 'SuaChua'); ?>
                                             <div class="car-meta-item" style="border-top: 1px dashed #cbd5e1; margin-top: 4px; padding-top: 6px;">
-                                                <span>Phiếu sửa gần nhất:</span>
-                                                <b>#PSC-<?= $repair['ma_psc'] ?> (<?= date('d/m/Y', strtotime($repair['ngay_lap'])) ?>)</b>
+                                                <span>Dịch vụ gần nhất:</span>
+                                                <b><i class="<?= $tInfo['icon'] ?>"></i> <?= $tInfo['short_title'] ?> #<?= $repair['ma_psc'] ?></b>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -1977,10 +1978,11 @@ foreach ($myRepairs as $r) {
                     </div>
 
                     <?php if ($repair): ?>
+                        <?php $tInfo = RepairModel::getTicketTypeInfo($repair['loai_phieu'] ?? 'SuaChua'); ?>
                         <div style="margin-top: 22px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                                 <div>
-                                    <b style="color: #1e40af; font-size: 1.05rem;">Phiếu sửa chữa: #<?= $repair['ma_psc'] ?></b> 
+                                    <b style="color: <?= $tInfo['color'] ?>; font-size: 1.05rem;"><i class="<?= $tInfo['icon'] ?>"></i> <?= $tInfo['title'] ?>: #<?= $repair['ma_psc'] ?></b> 
                                     <span style="color: #64748b; font-size: 0.9rem;">(Tiếp nhận: <?= date('d/m/Y H:i', strtotime($repair['ngay_lap'])) ?>)</span>
                                 </div>
                                 <div style="display: flex; gap: 10px; align-items: center;">

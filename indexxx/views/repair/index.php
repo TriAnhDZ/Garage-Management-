@@ -2,19 +2,48 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3><i class="fas fa-tools"></i> Danh sách phiếu sửa chữa xe</h3>
-                <div style="display: flex; gap: 10px;">
-                    <a href="index.php?c=repair&a=create" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Lập phiếu sửa mới
+                <h3 style="margin: 0;"><i class="fas fa-clipboard-list text-primary"></i> Quản lý phiếu dịch vụ &amp; Sửa chữa ô tô</h3>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="index.php?c=repair&a=create&type=SuaChua" class="btn btn-primary" style="font-weight: 700;">
+                        <i class="fas fa-wrench"></i> + Phiếu sửa chữa
+                    </a>
+                    <a href="index.php?c=repair&a=create&type=DoChe" class="btn btn-warning" style="font-weight: 700; background: #d97706; border-color: #d97706; color: #fff;">
+                        <i class="fas fa-cogs"></i> + Phiếu linh kiện/Độ xe
+                    </a>
+                    <a href="index.php?c=repair&a=create&type=RuaXe" class="btn btn-info" style="font-weight: 700;">
+                        <i class="fas fa-spray-can"></i> + Phiếu rửa xe/Spa
                     </a>
                 </div>
             </div>
 
             <div class="card-content">
+                <!-- Tabs chuyển đổi nhanh 3 loại phiếu -->
+                <div class="repair-type-tabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; flex-wrap: wrap;">
+                    <a href="index.php?c=repair&a=index<?= !empty($currentStatus) ? '&status='.$currentStatus : '' ?>" 
+                       class="type-tab-btn <?= empty($currentType) ? 'active' : '' ?>">
+                        <i class="fas fa-th-large"></i> Tất cả các phiếu
+                    </a>
+                    <a href="index.php?c=repair&a=index&type=SuaChua<?= !empty($currentStatus) ? '&status='.$currentStatus : '' ?>" 
+                       class="type-tab-btn tab-suachua <?= ($currentType === 'SuaChua') ? 'active' : '' ?>">
+                        <i class="fas fa-wrench"></i> 1. Phiếu sửa chữa &amp; bảo dưỡng
+                    </a>
+                    <a href="index.php?c=repair&a=index&type=DoChe<?= !empty($currentStatus) ? '&status='.$currentStatus : '' ?>" 
+                       class="type-tab-btn tab-doche <?= ($currentType === 'DoChe') ? 'active' : '' ?>">
+                        <i class="fas fa-cogs"></i> 2. Thay thế linh kiện &amp; Độ xe
+                    </a>
+                    <a href="index.php?c=repair&a=index&type=RuaXe<?= !empty($currentStatus) ? '&status='.$currentStatus : '' ?>" 
+                       class="type-tab-btn tab-ruaxe <?= ($currentType === 'RuaXe') ? 'active' : '' ?>">
+                        <i class="fas fa-spray-can"></i> 3. Phiếu rửa xe &amp; Car Spa
+                    </a>
+                </div>
+
                 <!-- Bộ lọc & Tìm kiếm -->
                 <form method="GET" action="index.php" style="margin-bottom: 20px;">
                     <input type="hidden" name="c" value="repair">
                     <input type="hidden" name="a" value="index">
+                    <?php if (!empty($currentType)): ?>
+                        <input type="hidden" name="type" value="<?= htmlspecialchars($currentType) ?>">
+                    <?php endif; ?>
                     <div class="row" style="align-items: flex-end;">
                         <div class="col-12 col-m-4">
                             <div class="form-group" style="margin-bottom: 0;">
@@ -40,7 +69,7 @@
                             <button type="submit" class="btn btn-info">
                                 <i class="fas fa-filter"></i> Lọc danh sách
                             </button>
-                            <a href="index.php?c=repair&a=index" class="btn btn-secondary">
+                            <a href="index.php?c=repair&a=index<?= !empty($currentType) ? '&type='.$currentType : '' ?>" class="btn btn-secondary">
                                 <i class="fas fa-redo"></i> Đặt lại
                             </a>
                         </div>
@@ -53,6 +82,7 @@
                         <thead>
                             <tr>
                                 <th>Mã phiếu</th>
+                                <th>Phân loại phiếu</th>
                                 <th>Biển số xe</th>
                                 <th>Hiệu xe</th>
                                 <th>Chủ xe / SĐT</th>
@@ -65,20 +95,30 @@
                         </thead>
                         <tbody>
                             <?php if (empty($repairs)): ?>
-                                <tr><td colspan="9" style="text-align: center; padding: 25px;">Không có phiếu sửa chữa nào phù hợp tiêu chí tìm kiếm.</td></tr>
+                                <tr><td colspan="10" style="text-align: center; padding: 30px; color: #64748b;">Không có phiếu nào phù hợp với điều kiện tìm kiếm.</td></tr>
                             <?php else: ?>
                                 <?php foreach ($repairs as $r): ?>
+                                    <?php 
+                                    $tInfo = RepairModel::getTicketTypeInfo($r['loai_phieu'] ?? 'SuaChua');
+                                    ?>
                                     <tr>
                                         <td><b>#<?= $r['ma_psc'] ?></b></td>
-                                        <td><span class="badge badge-info"><?= htmlspecialchars($r['bien_so']) ?></span></td>
+                                        <td>
+                                            <span class="badge" style="background: <?= $tInfo['bg_color'] ?>; color: <?= $tInfo['color'] ?>; border: 1px solid <?= $tInfo['border_color'] ?>; font-size: 0.8rem; padding: 4px 8px; font-weight: 700;">
+                                                <i class="<?= $tInfo['icon'] ?>"></i> <?= $tInfo['short_title'] ?>
+                                            </span>
+                                        </td>
+                                        <td><span class="badge badge-info" style="font-weight: 800; font-size: 0.9rem;"><?= htmlspecialchars($r['bien_so']) ?></span></td>
                                         <td><?= htmlspecialchars($r['hang_xe']) ?> <?= htmlspecialchars($r['dong_xe'] ?? '') ?></td>
                                         <td>
                                             <b><?= htmlspecialchars($r['ten_chu_xe']) ?></b><br>
                                             <small><?= htmlspecialchars($r['sdt_chu_xe']) ?></small>
                                         </td>
                                         <td><?= date('d/m/Y H:i', strtotime($r['ngay_lap'])) ?></td>
-                                        <td style="font-weight: 700; color: #eb4d4b;"><?= number_format((float)$r['tong_tien']) ?> đ</td>
-                                        <td style="font-weight: 700; color: #ffa502;"><?= number_format((float)$r['tien_no']) ?> đ</td>
+                                        <td style="font-weight: 700; color: #1e40af;"><?= number_format((float)$r['tong_tien']) ?> đ</td>
+                                        <td style="font-weight: 700; color: <?= (float)$r['tien_no'] > 0 ? '#dc2626' : '#16a34a' ?>;">
+                                            <?= number_format((float)$r['tien_no']) ?> đ
+                                        </td>
                                         <td>
                                             <?php
                                                 $badge = 'badge-secondary';
@@ -112,4 +152,43 @@
         </div>
     </div>
 </div>
+
+<style>
+.type-tab-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.2s ease;
+}
+.type-tab-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+.type-tab-btn.active {
+    background: #1e40af;
+    color: #ffffff;
+    border-color: #1e40af;
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+}
+.type-tab-btn.tab-suachua.active {
+    background: #1e40af;
+    border-color: #1e40af;
+}
+.type-tab-btn.tab-doche.active {
+    background: #d97706;
+    border-color: #d97706;
+}
+.type-tab-btn.tab-ruaxe.active {
+    background: #0284c7;
+    border-color: #0284c7;
+}
+</style>
 

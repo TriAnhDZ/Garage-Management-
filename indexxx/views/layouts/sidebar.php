@@ -91,11 +91,11 @@ $currentA = $_GET['a'] ?? 'index';
             </a>
         </li>
 
-        <!-- 4. Lập phiếu sửa chữa & Thu tiền tích hợp -->
+        <!-- 4. Lập phiếu dịch vụ: Sửa chữa, Độ chế & Rửa xe -->
         <li class="sidebar-nav-item <?= ($currentC === 'repair') ? 'active' : '' ?>">
-            <a href="index.php?c=repair&a=index" class="sidebar-nav-link" data-title="Phiếu sửa &amp; Thu tiền" title="Phiếu sửa chữa &amp; Quyết toán thu tiền">
+            <a href="index.php?c=repair&a=index" class="sidebar-nav-link" data-title="Phiếu dịch vụ" title="Phiếu sửa chữa, Thay linh kiện/Độ chế &amp; Rửa xe">
                 <div><i class="fas fa-tools"></i></div>
-                <span>Sửa chữa &amp; Thu tiền</span>
+                <span>Phiếu dịch vụ &amp; Sửa xe</span>
             </a>
         </li>
 

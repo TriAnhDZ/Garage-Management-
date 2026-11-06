@@ -1,18 +1,35 @@
+<?php
+$typeInfo = $typeInfo ?? RepairModel::getTicketTypeInfo($psc['loai_phieu'] ?? 'SuaChua');
+?>
 <div class="row">
-    <!-- Header thông tin phiếu sửa chữa -->
+    <!-- Header thông tin phiếu -->
     <div class="col-12">
         <div class="card">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
-                        <span>Phiếu sửa chữa #<?= $psc['ma_psc'] ?></span>
-                        <span class="badge badge-info" style="font-size: 1.1rem;"><?= htmlspecialchars($psc['bien_so']) ?></span>
+                    <h2 style="margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span><?= $typeInfo['title'] ?> #<?= $psc['ma_psc'] ?></span>
+                        <span class="badge" style="background: <?= $typeInfo['bg_color'] ?>; color: <?= $typeInfo['color'] ?>; border: 1.5px solid <?= $typeInfo['border_color'] ?>; font-size: 0.95rem; font-weight: 800;">
+                            <i class="<?= $typeInfo['icon'] ?>"></i> <?= $typeInfo['short_title'] ?>
+                        </span>
+                        <span class="badge badge-info" style="font-size: 1.05rem; font-weight: 800;"><?= htmlspecialchars($psc['bien_so']) ?></span>
                     </h2>
-                    <small style="color: #747d8c;">
+                    <small style="color: #64748b;">
                         Khởi tạo lúc: <?= date('d/m/Y H:i', strtotime($psc['ngay_lap'])) ?> | Kỹ thuật viên phụ trách: <b><?= htmlspecialchars($psc['ten_nv'] ?? 'Chưa chỉ định') ?></b>
                     </small>
                 </div>
-                <div class="card-actions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <div class="card-actions" style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <!-- Đổi loại phiếu nhanh nếu nhân viên chọn nhầm -->
+                    <form method="POST" action="index.php?c=repair&a=updateType" style="display: inline-flex; align-items: center; gap: 5px; margin: 0;">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="ma_psc" value="<?= $psc['ma_psc'] ?>">
+                        <select name="loai_phieu" class="form-control" style="font-size: 0.82rem; padding: 5px 8px; font-weight: 600;" onchange="this.form.submit()">
+                            <option value="SuaChua" <?= (($psc['loai_phieu'] ?? 'SuaChua') === 'SuaChua') ? 'selected' : '' ?>>🔧 Phiếu sửa chữa</option>
+                            <option value="DoChe" <?= (($psc['loai_phieu'] ?? '') === 'DoChe') ? 'selected' : '' ?>>⚙️ Thay linh kiện / Độ xe</option>
+                            <option value="RuaXe" <?= (($psc['loai_phieu'] ?? '') === 'RuaXe') ? 'selected' : '' ?>>🚿 Phiếu rửa xe / Spa</option>
+                        </select>
+                    </form>
+
                     <a href="index.php?c=repair&a=print&id=<?= $psc['ma_psc'] ?>" target="_blank" onclick="window.open(this.href, 'print_repair', 'width=1050,height=850,scrollbars=yes'); return false;" class="btn btn-secondary">
                         <i class="fas fa-print"></i> In phiếu
                     </a>
@@ -78,12 +95,34 @@
     </div>
 </div>
 
+<?php
+$sec1Title = "1. Chi tiết dịch vụ & tiền công sửa chữa";
+$sec1Icon = "fa-wrench";
+$sec1Placeholder = "Nhập tên dịch vụ sửa chữa...";
+$sec2Title = "2. Chi tiết vật tư phụ tùng thay thế";
+$sec2Icon = "fa-cogs";
+
+if (($psc['loai_phieu'] ?? '') === 'DoChe') {
+    $sec1Title = "1. Chi tiết tiền công lắp đặt & Độ chế xe";
+    $sec1Icon = "fa-tools";
+    $sec1Placeholder = "VD: Công độ đèn Bi-LED, Lắp màn hình Android, Độ pô...";
+    $sec2Title = "2. Phụ tùng, linh kiện & Đồ chơi xe nâng cấp";
+    $sec2Icon = "fa-cogs";
+} elseif (($psc['loai_phieu'] ?? '') === 'RuaXe') {
+    $sec1Title = "1. Gói dịch vụ rửa xe & Car Spa Detailing";
+    $sec1Icon = "fa-spray-can";
+    $sec1Placeholder = "VD: Rửa xe bọt tuyết, Dọn nội thất, Đánh bóng, Khử mùi...";
+    $sec2Title = "2. Hóa chất & Phụ liệu chăm sóc xe sử dụng";
+    $sec2Icon = "fa-pump-soap";
+}
+?>
+
 <!-- Phần 1: Chi tiết dịch vụ & Tiền công -->
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3><i class="fas fa-wrench"></i> 1. Chi tiết dịch vụ & tiền công sửa chữa</h3>
+                <h3><i class="fas <?= $sec1Icon ?>"></i> <?= $sec1Title ?></h3>
             </div>
             <div class="card-content">
                 <!-- Form thêm dịch vụ -->
@@ -93,14 +132,14 @@
                     <div class="row" style="align-items: flex-end;">
                         <div class="col-12 col-m-5">
                             <label style="font-weight: 600; font-size: 0.9rem;">
-                                <i class="fas fa-wrench text-primary"></i> Dịch vụ / Tiền công: <span style="color:red">*</span>
+                                <i class="fas <?= $sec1Icon ?> text-primary"></i> Dịch vụ thực hiện: <span style="color:red">*</span>
                             </label>
                             <input type="text" 
                                    name="ten_dv" 
                                    id="input_service" 
                                    class="form-control" 
                                    list="service_list" 
-                                   placeholder="Nhập tên dịch vụ..." 
+                                   placeholder="<?= $sec1Placeholder ?>" 
                                    autocomplete="off" 
                                    required 
                                    oninput="onServiceInputChange(this.value)">
@@ -181,7 +220,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h3><i class="fas fa-cogs"></i> 2. Chi tiết vật tư phụ tùng thay thế</h3>
+                <h3><i class="fas <?= $sec2Icon ?>"></i> <?= $sec2Title ?></h3>
             </div>
             <div class="card-content">
                 <!-- Form thêm phụ tùng -->
@@ -191,7 +230,7 @@
                     <div class="row" style="align-items: flex-end;">
                         <div class="col-12 col-m-5">
                             <label style="font-weight: 600; font-size: 0.9rem;">
-                                <i class="fas fa-boxes text-success"></i> Phụ tùng thay thế: <span style="color:red">*</span>
+                                <i class="fas <?= $sec2Icon ?> text-success"></i> Vật tư / Linh kiện sử dụng: <span style="color:red">*</span>
                             </label>
                             <input type="text" 
                                    name="ten_pt" 

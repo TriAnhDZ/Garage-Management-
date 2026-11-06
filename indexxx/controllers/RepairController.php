@@ -26,11 +26,13 @@ class RepairController extends BaseController {
         $this->requireRole(['TiepNhan', 'KyThuat', 'QuanLy']);
         $status = $_GET['status'] ?? null;
         $keyword = $_GET['keyword'] ?? null;
+        $type = $_GET['type'] ?? null;
 
-        $repairs = $this->repairModel->getAllRepairs($status, $keyword);
+        $repairs = $this->repairModel->getAllRepairs($status, $keyword, $type);
         $this->render('repair/index', [
             'repairs' => $repairs,
             'currentStatus' => $status,
+            'currentType' => $type,
             'keyword' => $keyword
         ]);
     }
@@ -38,7 +40,14 @@ class RepairController extends BaseController {
     public function create(): void {
         $this->requireRole(['TiepNhan', 'KyThuat', 'QuanLy']);
         $cars = $this->carModel->getAllCars();
-        $this->render('repair/create', ['cars' => $cars]);
+        $selectedType = trim($_GET['type'] ?? 'SuaChua');
+        if (!in_array($selectedType, ['SuaChua', 'DoChe', 'RuaXe'], true)) {
+            $selectedType = 'SuaChua';
+        }
+        $this->render('repair/create', [
+            'cars' => $cars,
+            'selectedType' => $selectedType
+        ]);
     }
 
     public function store(): void {
@@ -46,17 +55,39 @@ class RepairController extends BaseController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $maXe = (int)($_POST['ma_xe'] ?? 0);
             $maNv = (int)($_SESSION['user']['ma_nv'] ?? 1);
-
-            if ($maXe <= 0) {
-                $this->setFlash('danger', 'Vui lòng chọn xe cần lập phiếu sửa chữa.');
-                $this->redirect('index.php?c=repair&a=create');
+            $loaiPhieu = trim($_POST['loai_phieu'] ?? 'SuaChua');
+            if (!in_array($loaiPhieu, ['SuaChua', 'DoChe', 'RuaXe'], true)) {
+                $loaiPhieu = 'SuaChua';
             }
 
-            $maPsc = $this->repairModel->createRepair($maXe, $maNv);
-            $this->setFlash('success', "Khởi tạo phiếu sửa chữa #{$maPsc} thành công!");
+            if ($maXe <= 0) {
+                $this->setFlash('danger', 'Vui lòng chọn xe cần lập phiếu.');
+                $this->redirect('index.php?c=repair&a=create&type=' . $loaiPhieu);
+            }
+
+            $maPsc = $this->repairModel->createRepair($maXe, $maNv, null, $loaiPhieu);
+            $typeInfo = RepairModel::getTicketTypeInfo($loaiPhieu);
+            $this->setFlash('success', "Khởi tạo {$typeInfo['title']} #{$maPsc} thành công!");
             $this->redirect('index.php?c=repair&a=detail&id=' . $maPsc);
         }
         $this->redirect('index.php?c=repair&a=create');
+    }
+
+    public function updateType(): void {
+        $this->requireRole(['TiepNhan', 'KyThuat', 'QuanLy']);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $maPsc = (int)($_POST['ma_psc'] ?? 0);
+            $loaiPhieu = trim($_POST['loai_phieu'] ?? 'SuaChua');
+
+            if ($this->repairModel->updateTicketType($maPsc, $loaiPhieu)) {
+                $typeInfo = RepairModel::getTicketTypeInfo($loaiPhieu);
+                $this->setFlash('success', "Đã chuyển đổi sang: {$typeInfo['title']}");
+            } else {
+                $this->setFlash('danger', 'Không thể cập nhật loại phiếu!');
+            }
+            $this->redirect('index.php?c=repair&a=detail&id=' . $maPsc);
+        }
+        $this->redirect('index.php?c=repair&a=index');
     }
 
     public function detail(): void {
@@ -74,6 +105,7 @@ class RepairController extends BaseController {
         $allServices = $this->serviceModel->getAllServices(true);
         $allParts = $this->partModel->getAllParts();
         $invoice = $this->invoiceModel->getInvoiceByRepairId($id);
+        $typeInfo = RepairModel::getTicketTypeInfo($psc['loai_phieu'] ?? 'SuaChua');
 
         $this->render('repair/detail', [
             'psc'         => $psc,
@@ -81,7 +113,8 @@ class RepairController extends BaseController {
             'parts'       => $parts,
             'allServices' => $allServices,
             'allParts'    => $allParts,
-            'invoice'     => $invoice
+            'invoice'     => $invoice,
+            'typeInfo'    => $typeInfo
         ]);
     }
 
@@ -272,12 +305,14 @@ class RepairController extends BaseController {
         $services = $this->repairModel->getServicesByRepairId($id);
         $parts = $this->repairModel->getPartsByRepairId($id);
         $invoice = $this->invoiceModel->getInvoiceByRepairId($id);
+        $typeInfo = RepairModel::getTicketTypeInfo($psc['loai_phieu'] ?? 'SuaChua');
 
         $this->render('repair/print', [
             'psc'      => $psc,
             'services' => $services,
             'parts'    => $parts,
             'invoice'  => $invoice,
+            'typeInfo' => $typeInfo,
             'isStaff'  => $isStaff
         ], 'none');
     }

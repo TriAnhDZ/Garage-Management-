@@ -284,6 +284,20 @@ class PdfService {
         $tienChu = $this->numberToVietnameseWords($tongTien);
         $daThanhToan = ($psc['trang_thai'] === 'DaThanhToan' || !empty($invoice));
 
+        $typeInfo = RepairModel::getTicketTypeInfo($psc['loai_phieu'] ?? 'SuaChua');
+        $pdfTitle = $daThanhToan ? ($typeInfo['doc_title'] . ' &amp; HÓA ĐƠN') : $typeInfo['doc_title'];
+        $pdfSub = $daThanhToan ? 'NGHIỆM THU KIÊM HÓA ĐƠN QUYẾT TOÁN' : $typeInfo['doc_sub'];
+
+        $sec1Title = '1. TIỀN CÔNG DỊCH VỤ SỬA CHỮA &amp; BẢO DƯỠNG';
+        $sec2Title = '2. VẬT TƯ &amp; PHỤ TÙNG THAY THẾ CHÍNH HÃNG';
+        if (($psc['loai_phieu'] ?? '') === 'DoChe') {
+            $sec1Title = '1. TIỀN CÔNG LẮP ĐẶT &amp; ĐỘ CHẾ XE';
+            $sec2Title = '2. PHỤ TÙNG, LINH KIỆN &amp; ĐỒ CHƠI XE NÂNG CẤP';
+        } elseif (($psc['loai_phieu'] ?? '') === 'RuaXe') {
+            $sec1Title = '1. GÓI DỊCH VỤ RỬA XE &amp; CAR SPA DETAILING';
+            $sec2Title = '2. HÓA CHẤT &amp; PHỤ LIỆU CHĂM SÓC XE';
+        }
+
         $tienCong = 0;
         $servicesHtml = '';
         $stt = 1;
@@ -390,10 +404,11 @@ class PdfService {
                 </div>
             </td>
             <td style="width: 48%; text-align: right;">
-                <div class="doc-title-main">' . ($daThanhToan ? 'PHIẾU SỬA CHỮA &amp; HÓA ĐƠN' : 'PHIẾU SỬA CHỮA') . '</div>
-                <div class="doc-title-sub">' . ($daThanhToan ? 'NGHIỆM THU KIÊM HÓA ĐƠN QUYẾT TOÁN' : 'VEHICLE REPAIR ORDER &amp; JOB CARD') . '</div>
+                <div class="doc-title-main">' . $pdfTitle . '</div>
+                <div class="doc-title-sub">' . $pdfSub . '</div>
                 <div class="doc-meta-badge">
-                    <div>Lệnh sửa chữa: <b style="color: #1e40af; font-family: monospace; font-size: 8.5pt;">' . $soPsc . '</b></div>
+                    <div>Lệnh dịch vụ: <b style="color: #1e40af; font-family: monospace; font-size: 8.5pt;">' . $soPsc . '</b></div>
+                    <div>Phân loại: <b style="color: ' . $typeInfo['color'] . ';">' . $typeInfo['short_title'] . '</b></div>
                     ' . (!empty($invoice) ? '<div>Mã hóa đơn: <b style="color: #047857; font-family: monospace; font-size: 8.5pt;">' . htmlspecialchars($invoice['ma_hd_code'] ?? ('#HD' . $invoice['ma_hd'])) . '</b></div>
                     <div>Thanh toán: <b style="color: #047857;">' . ($invoice['phuong_thuc'] === 'ChuyenKhoan' ? 'Chuyển khoản (VietQR)' : 'Tiền mặt') . '</b></div>' : '<div>Trạng thái: <b style="color: #047857;">' . htmlspecialchars($psc['trang_thai']) . '</b></div>') . '
                     <div>Ngày lập: <b>' . $ngayLap . '</b></div>
@@ -424,7 +439,7 @@ class PdfService {
         </table>
     </div>
 
-    <div class="sec-title">1. TIỀN CÔNG DỊCH VỤ SỬA CHỮA &amp; BẢO DƯỠNG</div>
+    <div class="sec-title">' . $sec1Title . '</div>
     <table class="items-table">
         <thead>
             <tr>
@@ -438,7 +453,7 @@ class PdfService {
         <tbody>' . $servicesHtml . '</tbody>
     </table>
 
-    <div class="sec-title">2. VẬT TƯ &amp; PHỤ TÙNG THAY THẾ CHÍNH HÃNG</div>
+    <div class="sec-title">' . $sec2Title . '</div>
     <table class="items-table">
         <thead>
             <tr>

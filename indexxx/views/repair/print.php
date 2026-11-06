@@ -68,12 +68,26 @@ function docTienInPhieuSua($number): string {
 $tienChu = docTienInPhieuSua($tongTien);
 $invoice = $invoice ?? null;
 $daThanhToan = ($psc['trang_thai'] === 'DaThanhToan' || !empty($invoice));
+$typeInfo = $typeInfo ?? RepairModel::getTicketTypeInfo($psc['loai_phieu'] ?? 'SuaChua');
+
+$printTitle = $daThanhToan ? ($typeInfo['doc_title'] . ' &amp; HÓA ĐƠN THU TIỀN') : $typeInfo['doc_title'];
+$printSub = $daThanhToan ? 'BIÊN BẢN NGHIỆM THU KIÊM HÓA ĐƠN QUYẾT TOÁN TÍCH HỢP' : $typeInfo['doc_sub'];
+
+$printSec1 = '1. TIỀN CÔNG DỊCH VỤ SỬA CHỮA &amp; BẢO DƯỠNG';
+$printSec2 = '2. VẬT TƯ &amp; PHỤ TÙNG THAY THẾ CHÍNH HÃNG';
+if (($psc['loai_phieu'] ?? '') === 'DoChe') {
+    $printSec1 = '1. TIỀN CÔNG LẮP ĐẶT &amp; ĐỘ CHẾ XE';
+    $printSec2 = '2. PHỤ TÙNG, LINH KIỆN &amp; ĐỒ CHƠI XE NÂNG CẤP';
+} elseif (($psc['loai_phieu'] ?? '') === 'RuaXe') {
+    $printSec1 = '1. GÓI DỊCH VỤ RỬA XE &amp; CAR SPA DETAILING';
+    $printSec2 = '2. HÓA CHẤT &amp; PHỤ LIỆU CHĂM SÓC XE';
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title><?= $daThanhToan ? 'Hóa Đơn & Phiếu Sửa Chữa ' : 'In Phiếu Sửa Chữa ' ?><?= $soPsc ?></title>
+    <title><?= $typeInfo['short_title'] ?> <?= $soPsc ?></title>
     <style>
         @page { size: A4 portrait; margin: 8mm 12mm 6mm 12mm; }
         * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -164,10 +178,11 @@ $daThanhToan = ($psc['trang_thai'] === 'DaThanhToan' || !empty($invoice));
                 </div>
             </td>
             <td style="width: 48%; text-align: right;">
-                <div class="doc-title-main"><?= $daThanhToan ? 'PHIẾU SỬA CHỮA &amp; HÓA ĐƠN THU TIỀN' : 'PHIẾU SỬA CHỮA DỊCH VỤ' ?></div>
-                <div class="doc-title-sub"><?= $daThanhToan ? 'BIÊN BẢN NGHIỆM THU KIÊM HÓA ĐƠN QUYẾT TOÁN TÍCH HỢP' : 'VEHICLE REPAIR ORDER &amp; JOB CARD' ?></div>
+                <div class="doc-title-main"><?= $printTitle ?></div>
+                <div class="doc-title-sub"><?= $printSub ?></div>
                 <div class="doc-meta-badge">
-                    <div>Lệnh sửa chữa: <b style="color: #1e40af; font-family: monospace; font-size: 8.8pt;"><?= $soPsc ?></b></div>
+                    <div>Lệnh dịch vụ: <b style="color: #1e40af; font-family: monospace; font-size: 8.8pt;"><?= $soPsc ?></b></div>
+                    <div>Phân loại: <b style="color: <?= $typeInfo['color'] ?>;"><?= $typeInfo['short_title'] ?></b></div>
                     <?php if (!empty($invoice)): ?>
                         <div>Mã hóa đơn: <b style="color: #047857; font-family: monospace; font-size: 8.8pt;"><?= htmlspecialchars($invoice['ma_hd_code'] ?? ('#HD' . $invoice['ma_hd'])) ?></b></div>
                         <div>Thanh toán: <b style="color: #047857;"><?= ($invoice['phuong_thuc'] === 'ChuyenKhoan') ? 'Chuyển khoản (VietQR)' : 'Tiền mặt' ?></b></div>
@@ -203,7 +218,7 @@ $daThanhToan = ($psc['trang_thai'] === 'DaThanhToan' || !empty($invoice));
     </div>
 
     <!-- 1. Bảng Dịch vụ Tiền công -->
-    <div class="sec-title">1. TIỀN CÔNG DỊCH VỤ SỬA CHỮA &amp; BẢO DƯỠNG</div>
+    <div class="sec-title"><?= $printSec1 ?></div>
     <table class="items-table">
         <thead>
             <tr>
@@ -237,7 +252,7 @@ $daThanhToan = ($psc['trang_thai'] === 'DaThanhToan' || !empty($invoice));
     </table>
 
     <!-- 2. Bảng Phụ tùng -->
-    <div class="sec-title">2. VẬT TƯ &amp; PHỤ TÙNG THAY THẾ CHÍNH HÃNG</div>
+    <div class="sec-title"><?= $printSec2 ?></div>
     <table class="items-table">
         <thead>
             <tr>

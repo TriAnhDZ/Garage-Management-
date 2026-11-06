@@ -16,7 +16,7 @@ class RepairModel extends BaseModel {
         $this->serviceModel = new ServiceModel();
     }
 
-    public function getAllRepairs(?string $status = null, ?string $keyword = null): array {
+    public function getAllRepairs(?string $status = null, ?string $keyword = null, ?string $loaiPhieu = null): array {
         $sql = "SELECT psc.*, 
                        x.bien_so, x.hang_xe, x.dong_xe, x.tien_no,
                        kh.ma_kh, nd_kh.ho_ten AS ten_chu_xe, nd_kh.sdt AS sdt_chu_xe,
@@ -33,6 +33,11 @@ class RepairModel extends BaseModel {
         if (!empty($status)) {
             $sql .= " AND psc.trang_thai = ?";
             $params[] = $status;
+        }
+
+        if (!empty($loaiPhieu)) {
+            $sql .= " AND psc.loai_phieu = ?";
+            $params[] = $loaiPhieu;
         }
 
         if (!empty($keyword)) {
@@ -87,11 +92,73 @@ class RepairModel extends BaseModel {
         return $this->fetchAll($sql, [$maPsc]);
     }
 
-    public function createRepair(int $maXe, int $maNv, ?int $maLh = null): int {
-        $sql = "INSERT INTO phieu_sua_chua (ma_xe, ma_nv, ma_lh, ngay_lap, trang_thai, tong_tien) 
-                VALUES (?, ?, ?, NOW(), 'TiepNhan', 0.00)";
-        $this->execute($sql, [$maXe, $maNv, $maLh]);
+    public function createRepair(int $maXe, int $maNv, ?int $maLh = null, string $loaiPhieu = 'SuaChua'): int {
+        if (!in_array($loaiPhieu, ['SuaChua', 'DoChe', 'RuaXe'], true)) {
+            $loaiPhieu = 'SuaChua';
+        }
+        $sql = "INSERT INTO phieu_sua_chua (ma_xe, ma_nv, ma_lh, loai_phieu, ngay_lap, trang_thai, tong_tien) 
+                VALUES (?, ?, ?, ?, NOW(), 'TiepNhan', 0.00)";
+        $this->execute($sql, [$maXe, $maNv, $maLh, $loaiPhieu]);
         return (int)$this->lastInsertId();
+    }
+
+    /**
+     * Cập nhật loại phiếu (Phiếu sửa chữa, Thay thế linh kiện/Độ chế, Rửa xe)
+     */
+    public function updateTicketType(int $maPsc, string $loaiPhieu): bool {
+        if (!in_array($loaiPhieu, ['SuaChua', 'DoChe', 'RuaXe'], true)) {
+            return false;
+        }
+        $sql = "UPDATE phieu_sua_chua SET loai_phieu = ? WHERE ma_psc = ?";
+        return $this->execute($sql, [$loaiPhieu, $maPsc]);
+    }
+
+    /**
+     * Thông tin chi tiết hiển thị cho từng loại phiếu
+     */
+    public static function getTicketTypeInfo(?string $type): array {
+        switch ($type) {
+            case 'DoChe':
+                return [
+                    'key'         => 'DoChe',
+                    'title'       => 'Phiếu thay thế linh kiện / Độ chế xe',
+                    'short_title' => 'Linh kiện & Độ xe',
+                    'badge_class' => 'badge-warning',
+                    'icon'        => 'fas fa-cogs',
+                    'color'       => '#d97706',
+                    'bg_color'    => '#fffbeb',
+                    'border_color'=> '#fde68a',
+                    'doc_title'   => 'PHIẾU THAY THẾ LINH KIỆN & ĐỘ CHẾ XE',
+                    'doc_sub'     => 'PARTS REPLACEMENT & TUNING WORK ORDER'
+                ];
+            case 'RuaXe':
+                return [
+                    'key'         => 'RuaXe',
+                    'title'       => 'Phiếu rửa xe & Chăm sóc xe (Detailing)',
+                    'short_title' => 'Rửa xe & Car Spa',
+                    'badge_class' => 'badge-info',
+                    'icon'        => 'fas fa-spray-can',
+                    'color'       => '#0284c7',
+                    'bg_color'    => '#f0f9ff',
+                    'border_color'=> '#bae6fd',
+                    'doc_title'   => 'PHIẾU RỬA XE & CAR SPA DETAILING',
+                    'doc_sub'     => 'CAR DETAILING & CLEANING WORK ORDER'
+                ];
+            case 'SuaChua':
+            default:
+                return [
+                    'key'         => 'SuaChua',
+                    'title'       => 'Phiếu sửa chữa & Bảo dưỡng',
+                    'short_title' => 'Sửa chữa & Bảo dưỡng',
+                    'badge_class' => 'badge-primary',
+                    'icon'        => 'fas fa-wrench',
+                    'color'       => '#1e40af',
+                    'bg_color'    => '#eff6ff',
+                    'border_color'=> '#bfdbfe',
+                    'doc_title'   => 'PHIẾU SỬA CHỮA DỊCH VỤ',
+                    'doc_sub'     => 'VEHICLE REPAIR ORDER & JOB CARD'
+                ];
+        }
     }
 
     public function addServiceItem(int $maPsc, $serviceInput, int $soLuong = 1, ?float $donGia = null): array {
