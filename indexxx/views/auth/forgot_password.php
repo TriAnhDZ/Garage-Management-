@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quên mật khẩu - Garage Pro</title>
     <link rel="stylesheet" href="assets/fontawesomefree/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/css/custom.css">
     <style>

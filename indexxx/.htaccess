@@ -30,7 +30,7 @@ Options -Indexes
     # 8. Content Security Policy (CSP - Chuẩn OWASP WSTG & Chống XSS)
     Header always unset Content-Security-Policy
     Header unset Content-Security-Policy
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://cdnjs.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; connect-src 'self'; frame-ancestors 'self';"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' data:; img-src 'self' data: https://cdnjs.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; connect-src 'self'; frame-ancestors 'self';"
 </IfModule>
 
 # 9. Ngăn chặn truy cập trái phép vào các tệp tin cấu hình, sao lưu và cơ sở dữ liệu nhạy cảm
