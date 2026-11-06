@@ -313,12 +313,12 @@ foreach ($myRepairs as $r) {
             border-color: #ef4444;
         }
 
-        /* Hero Banner Section */
+        /* Hero Banner Section with Workshop Background */
         .hero-section {
             margin-top: 74px;
-            background: linear-gradient(135deg, #090d16 0%, #0f172a 45%, #1e293b 100%);
+            background: linear-gradient(90deg, rgba(10, 15, 29, 0.95) 0%, rgba(15, 23, 42, 0.88) 55%, rgba(15, 23, 42, 0.70) 100%), url('assets/images/services/hero_workshop.jpg') center right / cover no-repeat;
             color: #ffffff;
-            padding: 75px 36px 95px;
+            padding: 85px 36px 105px;
             position: relative;
             overflow: hidden;
         }
@@ -327,10 +327,10 @@ foreach ($myRepairs as $r) {
             content: '';
             position: absolute;
             top: 0;
+            left: 0;
             right: 0;
-            width: 500px;
-            height: 100%;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.15) 0%, transparent 65%);
             pointer-events: none;
         }
 
@@ -1516,71 +1516,76 @@ foreach ($myRepairs as $r) {
         </div>
     <?php endif; ?>
 
-    <!-- 2. Hero Showcase Banner -->
+    <!-- 2. Hero Showcase Banner with Background Image -->
     <section class="hero-section">
         <div class="hero-content">
-            <div class="hero-flex-wrapper" style="display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap;">
-                <div style="flex: 1 1 540px; min-width: 300px;">
-                    <?php if ($isCustomer && $currentUser): ?>
-                        <div class="hero-tag">
-                            <i class="fas fa-gem" style="color: #fbbf24;"></i> CỔNG DỊCH VỤ KHÁCH HÀNG THÂN THIẾT (VIP)
-                        </div>
-                        <h1 class="hero-title">
-                            Kính chào Quý khách, <span><?= htmlspecialchars($currentUser['ho_ten']) ?></span>!
-                        </h1>
-                        <p class="hero-desc">
-                            Chào mừng bạn quay trở lại với Trung tâm Dịch vụ Kỹ thuật Ô tô <b>GARA PRO HÀ NỘI</b>. Hệ thống sẵn sàng đồng hành cùng xế yêu của bạn: theo dõi tiến độ sửa chữa trực tuyến, tải phiếu kết quả & hóa đơn PDF (1 trang) đính kèm chữ ký đóng dấu xác nhận.
-                        </p>
-                        <div class="hero-actions">
-                            <a href="#xe-cua-toi" class="btn-hero btn-hero-primary">
-                                <i class="fas fa-car"></i> Quản lý <?= count($myCars) ?> xe của tôi
-                            </a>
-                            <a href="#dat-lich" class="btn-hero btn-hero-outline">
-                                <i class="fas fa-calendar-plus"></i> Đặt lịch hẹn bảo dưỡng mới
-                            </a>
-                            <a href="#gioi-thieu" class="btn-hero btn-hero-outline">
-                                <i class="fas fa-info-circle"></i> Giới thiệu về Garage Pro
-                            </a>
-                            <a href="tel:0825893162" class="btn-hero btn-hero-outline" style="border-color: #34d399; color: #34d399;">
-                                <i class="fas fa-phone-alt"></i> Hotline 24/7: 0825.893.162
-                            </a>
-                        </div>
-                    <?php else: ?>
-                        <h1 class="hero-title">
-                            DỊCH VỤ SỬA CHỮA & CHĂM SÓC XE <span>CHUYÊN NGHIỆP TẠI HÀ NỘI</span>
-                        </h1>
-                        <p class="hero-desc">
-                            Garage Pro Hà Nội - Tọa lạc tại 123 Đường Cầu Giấy, Hà Nội. Quy mô 2.000m² với 10 khoang dịch vụ hiện đại, cầu nâng thủy lực chuẩn châu Âu, máy chẩn đoán OBD-II đa năng, cam kết 100% phụ tùng chính hãng và tự động xuất hóa đơn PDF qua Gmail.
-                        </p>
-                        <div class="hero-actions">
-                            <a href="#dat-lich" class="btn-hero btn-hero-primary">
-                                <i class="fas fa-calendar-check"></i> Đặt lịch hẹn bảo dưỡng ngay
-                            </a>
-                            <a href="#tra-cuu" class="btn-hero btn-hero-outline">
-                                <i class="fas fa-search-location"></i> Tra cứu tiến độ xe đang sửa
-                            </a>
-                            <a href="#gioi-thieu" class="btn-hero btn-hero-outline">
-                                <i class="fas fa-building"></i> Tìm hiểu về Garage Pro
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                </div>
+            <div style="max-width: 860px;">
+                <?php if ($isCustomer && $currentUser): ?>
+                    <div class="hero-tag">
+                        <i class="fas fa-gem" style="color: #fbbf24;"></i> CỔNG DỊCH VỤ KHÁCH HÀNG THÂN THIẾT (VIP)
+                    </div>
+                    <h1 class="hero-title">
+                        Kính chào Quý khách, <span><?= htmlspecialchars($currentUser['ho_ten']) ?></span>!
+                    </h1>
+                    <p class="hero-desc">
+                        Chào mừng bạn quay trở lại với Trung tâm Dịch vụ Kỹ thuật Ô tô <b>GARA PRO HÀ NỘI</b>. Hệ thống sẵn sàng đồng hành cùng xế yêu của bạn: theo dõi tiến độ sửa chữa trực tuyến, tải phiếu kết quả & hóa đơn PDF (1 trang) đính kèm chữ ký đóng dấu xác nhận.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#xe-cua-toi" class="btn-hero btn-hero-primary">
+                            <i class="fas fa-car"></i> Quản lý <?= count($myCars) ?> xe của tôi
+                        </a>
+                        <a href="#dat-lich" class="btn-hero btn-hero-outline">
+                            <i class="fas fa-calendar-plus"></i> Đặt lịch hẹn bảo dưỡng mới
+                        </a>
+                        <a href="#gioi-thieu" class="btn-hero btn-hero-outline">
+                            <i class="fas fa-info-circle"></i> Giới thiệu về Garage Pro
+                        </a>
+                        <a href="tel:0825893162" class="btn-hero btn-hero-outline" style="border-color: #34d399; color: #34d399;">
+                            <i class="fas fa-phone-alt"></i> Hotline 24/7: 0825.893.162
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <div class="hero-tag">
+                        <i class="fas fa-shield-alt" style="color: #38bdf8;"></i> TRUNG TÂM DỊCH VỤ KỸ THUẬT Ô TÔ CHUẨN CHÂU ÂU
+                    </div>
+                    <h1 class="hero-title">
+                        DỊCH VỤ SỬA CHỮA &amp; CHĂM SÓC XE <span>CHUYÊN NGHIỆP TẠI HÀ NỘI</span>
+                    </h1>
+                    <p class="hero-desc">
+                        Garage Pro Hà Nội - Tọa lạc tại 123 Đường Cầu Giấy, Hà Nội. Quy mô 2.000m² với 10 khoang dịch vụ hiện đại, cầu nâng thủy lực chuẩn châu Âu, máy chẩn đoán OBD-II đa năng, cam kết 100% phụ tùng chính hãng và tự động xuất hóa đơn PDF qua Gmail.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#dat-lich" class="btn-hero btn-hero-primary">
+                            <i class="fas fa-calendar-check"></i> Đặt lịch hẹn bảo dưỡng ngay
+                        </a>
+                        <a href="#tra-cuu" class="btn-hero btn-hero-outline">
+                            <i class="fas fa-search-location"></i> Tra cứu tiến độ xe đang sửa
+                        </a>
+                        <a href="#gioi-thieu" class="btn-hero btn-hero-outline">
+                            <i class="fas fa-building"></i> Tìm hiểu về Garage Pro
+                        </a>
+                    </div>
+                <?php endif; ?>
 
-                <!-- Thẻ Hình Ảnh Xưởng Thực Tế Nổi Bật -->
-                <div style="flex: 1 1 420px; max-width: 500px; width: 100%;">
-                    <div style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 45px rgba(0,0,0,0.45); border: 1.5px solid rgba(255,255,255,0.15);">
-                        <img src="assets/images/services/hero_workshop.jpg" alt="Khoang xưởng dịch vụ Garage Pro" style="width: 100%; height: 320px; object-fit: cover; display: block;">
-                        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent);">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                                <span style="background: #2563eb; color: #fff; font-size: 0.75rem; font-weight: 800; padding: 3px 8px; border-radius: 6px;">XƯỞNG KỸ THUẬT</span>
-                                <span style="color: #38bdf8; font-size: 0.82rem; font-weight: 600;"><i class="fas fa-certificate"></i> Chuẩn Châu Âu</span>
-                            </div>
-                            <h4 style="margin: 0; font-size: 1.1rem; color: #ffffff; font-weight: 700;">Hệ Thống 10 Khoang Sửa Chữa Hiện Đại</h4>
-                            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #cbd5e1;">Cầu nâng thủy lực cao cấp & máy chẩn đoán ECU đa năng</p>
-                        </div>
-                        <div style="position: absolute; top: 16px; right: 16px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; gap: 8px; color: #fbbf24; font-size: 0.82rem; font-weight: 700;">
-                            <i class="fas fa-star"></i> 5.000+ Lượt Xe Tin Cậy
-                        </div>
+                <!-- Dải điểm nổi bật (Trust Highlights) -->
+                <div style="display: flex; gap: 24px; margin-top: 35px; flex-wrap: wrap; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.15);">
+                    <div style="display: flex; align-items: center; gap: 10px; color: #f1f5f9; font-size: 0.92rem;">
+                        <span style="width: 36px; height: 36px; border-radius: 50%; background: rgba(37,99,235,0.4); color: #93c5fd; display: flex; align-items: center; justify-content: center; font-size: 1rem; border: 1px solid rgba(147,197,253,0.3);">
+                            <i class="fas fa-warehouse"></i>
+                        </span>
+                        <span><b>10 Khoang</b> sửa chữa chuyên sâu</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #f1f5f9; font-size: 0.92rem;">
+                        <span style="width: 36px; height: 36px; border-radius: 50%; background: rgba(16,185,129,0.4); color: #6ee7b7; display: flex; align-items: center; justify-content: center; font-size: 1rem; border: 1px solid rgba(110,231,183,0.3);">
+                            <i class="fas fa-check-circle"></i>
+                        </span>
+                        <span><b>100% Phụ tùng</b> chính hãng bảo hành 12-24T</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #f1f5f9; font-size: 0.92rem;">
+                        <span style="width: 36px; height: 36px; border-radius: 50%; background: rgba(245,158,11,0.4); color: #fde68a; display: flex; align-items: center; justify-content: center; font-size: 1rem; border: 1px solid rgba(253,230,138,0.3);">
+                            <i class="fas fa-file-invoice"></i>
+                        </span>
+                        <span><b>Tự động gửi</b> Hóa đơn PDF qua Gmail</span>
                     </div>
                 </div>
             </div>
